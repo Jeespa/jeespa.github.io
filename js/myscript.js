@@ -8,6 +8,11 @@ let scene, camera, renderer, controls, productModel;
 let mainCamera, topCamera, zoomCamera;
 const productPath = "../models/phone/iphone_mini.glb"; // Change to your model
 const initialColor = { color: "#ff0000" }; // Global initial color of the product
+const cameraPositions = {
+    main: { position: new THREE.Vector3(1.5, 1, 2), lookAt: new THREE.Vector3(0, 1, 0) },
+    zoom: { position: new THREE.Vector3(1, 0.5, 1), lookAt: new THREE.Vector3(0, 1, 0) },
+    top: { position: new THREE.Vector3(0, 3, 0), lookAt: new THREE.Vector3(0, 0, 0) }
+};
 
 init();
 loadProduct();
@@ -25,20 +30,28 @@ function init() {
     renderer.shadowMap.enabled = true;
     document.body.appendChild(renderer.domElement);
 
-    // Cameras
+    // Aspect Ratio
     const aspect = window.innerWidth / window.innerHeight;
+
+    // Define Fixed Cameras Using Global Positions
     mainCamera = new THREE.PerspectiveCamera(45, aspect, 0.1, 100);
-    mainCamera.position.set(1.5, 1, 2);
-    mainCamera.lookAt(0, 1, 0);
-    
-    topCamera = new THREE.OrthographicCamera(-5, 5, 5, -5, 0.1, 100);
-    topCamera.position.set(0, 3, 0);
-    topCamera.lookAt(0, 0, 0);
-    
+    mainCamera.position.copy(cameraPositions.main.position);
+    mainCamera.lookAt(cameraPositions.main.lookAt);
+
     zoomCamera = new THREE.PerspectiveCamera(50, aspect, 0.1, 100);
-    zoomCamera.position.set(1, 0.5, 1);
-    zoomCamera.lookAt(0, 1, 0);
-    
+    zoomCamera.position.copy(cameraPositions.zoom.position);
+    zoomCamera.lookAt(cameraPositions.zoom.lookAt);
+
+    topCamera = new THREE.OrthographicCamera(-5, 5, 5, -5, 0.1, 100);
+    topCamera.position.copy(cameraPositions.top.position);
+    topCamera.lookAt(cameraPositions.top.lookAt);
+
+    // Free Camera (Initially Same as Main)
+    freeCamera = new THREE.PerspectiveCamera(45, aspect, 0.1, 100);
+    freeCamera.position.copy(mainCamera.position);
+    freeCamera.lookAt(cameraPositions.main.lookAt);
+
+    // Default Camera
     camera = mainCamera;
 
     // Controls
@@ -103,15 +116,14 @@ function loadProduct() {
     });
 }
 
-
-
-
 function setupGUI() {
     const gui = new GUI();
     const cameraFolder = gui.addFolder('Camera Views');
-    cameraFolder.add({ main: () => switchCamera(mainCamera) }, 'main').name('Main View');
-    cameraFolder.add({ top: () => switchCamera(topCamera) }, 'top').name('Top View');
-    cameraFolder.add({ zoom: () => switchCamera(zoomCamera) }, 'zoom').name('Zoom View');
+
+    cameraFolder.add({ main: () => switchCamera(mainCamera, true) }, 'main').name('Main View');
+    cameraFolder.add({ top: () => switchCamera(topCamera, true) }, 'top').name('Top View');
+    cameraFolder.add({ zoom: () => switchCamera(zoomCamera, true) }, 'zoom').name('Zoom View');
+    cameraFolder.add({ free: () => switchCamera(freeCamera, false) }, 'free').name('Free Cam');
     cameraFolder.open();
 
     const colorFolder = gui.addFolder('Product Customization');
@@ -123,7 +135,22 @@ function setupGUI() {
     colorFolder.open();
 }
 
-function switchCamera(newCamera) {
+function switchCamera(newCamera, resetPosition) {
+    // If switching to a fixed camera, reset its position dynamically
+    if (resetPosition) {
+        if (newCamera === mainCamera) {
+            mainCamera.position.copy(cameraPositions.main.position);
+            mainCamera.lookAt(cameraPositions.main.lookAt);
+        } else if (newCamera === zoomCamera) {
+            zoomCamera.position.copy(cameraPositions.zoom.position);
+            zoomCamera.lookAt(cameraPositions.zoom.lookAt);
+        } else if (newCamera === topCamera) {
+            topCamera.position.copy(cameraPositions.top.position);
+            topCamera.lookAt(cameraPositions.top.lookAt);
+        }
+    }
+
+    // Update active camera
     camera = newCamera;
     controls.object = camera;
     controls.update();
