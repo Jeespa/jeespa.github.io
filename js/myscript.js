@@ -170,7 +170,7 @@ function switchCamera(newCamera) {
 
 function loadHDRILikeBackground() {
     const loader = new THREE.TextureLoader();
-    loader.load("../textures/your_hdr_image.jpg", function (texture) {
+    loader.load("../textures/sky/sky_cubemap.png", function (texture) {
         texture.mapping = THREE.EquirectangularReflectionMapping;
         scene.background = texture;
     });
