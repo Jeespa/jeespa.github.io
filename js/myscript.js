@@ -181,12 +181,12 @@ function loadSkybox() {
     }
 
     const materials = [
-        createMaterial("../textures/skybox/px.jpg"), // Right
-        createMaterial("../textures/skybox/nx.jpg"), // Left
-        createMaterial("../textures/skybox/py.jpg"), // Top
-        createMaterial("../textures/skybox/ny.jpg"), // Bottom
-        createMaterial("../textures/skybox/pz.jpg"), // Front
-        createMaterial("../textures/skybox/nz.jpg")  // Back
+        createMaterial("../textures/skybox/sky_cubemap3.png"), // Right
+        createMaterial("../textures/skybox/sky_cubemap.png"), // Left
+        createMaterial("../textures/skybox/sky_cubemap5.png"), // Top
+        createMaterial("../textures/skybox/sky_cubemap6.png"), // Bottom
+        createMaterial("../textures/skybox/sky_cubemap2.png"), // Front
+        createMaterial("../textures/skybox/sky_cubemap4.png")  // Back
     ];
 
     const skyboxGeometry = new THREE.BoxGeometry(50, 50, 50); // Large cube
