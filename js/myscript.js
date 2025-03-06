@@ -13,7 +13,7 @@ const initialColor = { color: "#ff0000" }; // Global initial color of the produc
 const cameraPositions = {
     main: { position: new THREE.Vector3(1.5, 1, 2), lookAt: new THREE.Vector3(0, 1, 0) },
     zoom: { position: new THREE.Vector3(1, 0.5, 1), lookAt: new THREE.Vector3(0, 1, 0) },
-    top: { position: new THREE.Vector3(0, 0.5, 0), lookAt: new THREE.Vector3(0, 0, 0) }
+    top: { position: new THREE.Vector3(0, 1, 0), lookAt: new THREE.Vector3(0, 0, 0) }
 };
 
 init();
