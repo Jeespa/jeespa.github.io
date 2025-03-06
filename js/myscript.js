@@ -173,10 +173,10 @@ function loadSkybox() {
 
     function createMaterial(imagePath) {
         const texture = textureLoader.load(imagePath);
-        texture.magFilter = THREE.LinearFilter; // Prevents pixelation
-        texture.minFilter = THREE.LinearMipMapLinearFilter; // Smooths out seams
-        texture.wrapS = THREE.ClampToEdgeWrapping;
-        texture.wrapT = THREE.ClampToEdgeWrapping;
+        texture.magFilter = THREE.NearestFilter; // Avoids blurring
+        texture.minFilter = THREE.NearestMipMapNearestFilter; // Avoids texture blending issues
+        texture.wrapS = THREE.RepeatWrapping; // Ensures correct wrapping
+        texture.wrapT = THREE.RepeatWrapping;
         return new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide });
     }
 
@@ -189,10 +189,18 @@ function loadSkybox() {
         createMaterial("../textures/skybox/sky_cubemap4.png")  // Back
     ];
 
-    const skyboxGeometry = new THREE.BoxGeometry(51, 51, 51); // Large cube
+    // Increase cube size slightly to remove possible gaps
+    const skyboxGeometry = new THREE.BoxGeometry(52, 52, 52); // Slightly bigger cube
+
+    // Slightly scale UV mapping to fix seams
+    skyboxGeometry.attributes.uv.array.forEach((value, index) => {
+        skyboxGeometry.attributes.uv.array[index] = value * 0.99 + 0.005;
+    });
+
     const skybox = new THREE.Mesh(skyboxGeometry, materials);
     scene.add(skybox);
 }
+
 
 
 
