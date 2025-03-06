@@ -1,5 +1,6 @@
 import * as THREE from "../lib/three.module.js";
 import { GLTFLoader } from "../lib/GLTFLoader.module.js";
+import { EXRLoader } from "../lib/EXRLoader.module.js";
 import { OrbitControls } from "../lib/OrbitControls.module.js";
 import { TWEEN } from "../lib/tween.module.min.js";
 import { GUI } from "../lib/lil-gui.module.min.js";
@@ -13,10 +14,11 @@ const initialColor = { color: "#ff0000" }; // Global initial color of the produc
 const cameraPositions = {
     main: { position: new THREE.Vector3(1.5, 1, 2), lookAt: new THREE.Vector3(0, 1, 0) },
     zoom: { position: new THREE.Vector3(1, 0.5, 1), lookAt: new THREE.Vector3(0, 1, 0) },
-    top: { position: new THREE.Vector3(0, 1, 0), lookAt: new THREE.Vector3(0, 0, 0) }
+    top: { position: new THREE.Vector3(0, 1.5, 0), lookAt: new THREE.Vector3(0, 0, 0) }
 };
 
 init();
+loadEXRBackground();
 loadProduct();
 setupGUI();
 animate();
@@ -167,6 +169,15 @@ function switchCamera(newCamera) {
 }
 
 
+function loadEXRBackground() {
+    const exrLoader = new EXRLoader();
+    exrLoader.load("../textures/your_file.exr", function (texture) {
+        texture.mapping = THREE.EquirectangularReflectionMapping;
+        scene.background = texture; // Sets EXR as the background
+        scene.environment = texture; // Optional: Adds realistic reflections
+    });
+}
+
 function animate() {
     requestAnimationFrame(animate);
     TWEEN.update();
@@ -189,4 +200,3 @@ function onWindowResize() {
 
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
-
