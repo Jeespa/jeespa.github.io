@@ -170,18 +170,30 @@ function switchCamera(newCamera) {
 
 function loadSkybox() {
     const textureLoader = new THREE.TextureLoader();
+
+    function createMaterial(imagePath) {
+        const texture = textureLoader.load(imagePath);
+        texture.magFilter = THREE.LinearFilter; // Prevents pixelation
+        texture.minFilter = THREE.LinearMipMapLinearFilter; // Smooths out seams
+        texture.wrapS = THREE.ClampToEdgeWrapping;
+        texture.wrapT = THREE.ClampToEdgeWrapping;
+        return new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide });
+    }
+
     const materials = [
-        new THREE.MeshBasicMaterial({ map: textureLoader.load("../textures/skybox/sky_cubemap3.png"), side: THREE.BackSide }), // Right
-        new THREE.MeshBasicMaterial({ map: textureLoader.load("../textures/skybox/sky_cubemap.png"), side: THREE.BackSide }), // Left
-        new THREE.MeshBasicMaterial({ map: textureLoader.load("../textures/skybox/sky_cubemap5.png"), side: THREE.BackSide }), // Top
-        new THREE.MeshBasicMaterial({ map: textureLoader.load("../textures/skybox/sky_cubemap6.png"), side: THREE.BackSide }), // Bottom
-        new THREE.MeshBasicMaterial({ map: textureLoader.load("../textures/skybox/sky_cubemap2.png"), side: THREE.BackSide }), // Front
-        new THREE.MeshBasicMaterial({ map: textureLoader.load("../textures/skybox/sky_cubemap4.png"), side: THREE.BackSide })  // Back
+        createMaterial("../textures/skybox/px.jpg"), // Right
+        createMaterial("../textures/skybox/nx.jpg"), // Left
+        createMaterial("../textures/skybox/py.jpg"), // Top
+        createMaterial("../textures/skybox/ny.jpg"), // Bottom
+        createMaterial("../textures/skybox/pz.jpg"), // Front
+        createMaterial("../textures/skybox/nz.jpg")  // Back
     ];
+
     const skyboxGeometry = new THREE.BoxGeometry(50, 50, 50); // Large cube
     const skybox = new THREE.Mesh(skyboxGeometry, materials);
     scene.add(skybox);
 }
+
 
 
 
