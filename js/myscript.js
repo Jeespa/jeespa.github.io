@@ -171,12 +171,12 @@ function switchCamera(newCamera) {
 function loadSkybox() {
     const textureLoader = new THREE.TextureLoader();
     const materials = [
-        new THREE.MeshBasicMaterial({ map: textureLoader.load("../textures/skybox/cubemap3.png"), side: THREE.BackSide }), // Right
-        new THREE.MeshBasicMaterial({ map: textureLoader.load("../textures/skybox/cubemap.png"), side: THREE.BackSide }), // Left
-        new THREE.MeshBasicMaterial({ map: textureLoader.load("../textures/skybox/cubemap5.png"), side: THREE.BackSide }), // Top
-        new THREE.MeshBasicMaterial({ map: textureLoader.load("../textures/skybox/cubemap6.png"), side: THREE.BackSide }), // Bottom
-        new THREE.MeshBasicMaterial({ map: textureLoader.load("../textures/skybox/cubemap2.png"), side: THREE.BackSide }), // Front
-        new THREE.MeshBasicMaterial({ map: textureLoader.load("../textures/skybox/cubemap4.png"), side: THREE.BackSide })  // Back
+        new THREE.MeshBasicMaterial({ map: textureLoader.load("../textures/skybox/sky_cubemap3.png"), side: THREE.BackSide }), // Right
+        new THREE.MeshBasicMaterial({ map: textureLoader.load("../textures/skybox/sky_cubemap.png"), side: THREE.BackSide }), // Left
+        new THREE.MeshBasicMaterial({ map: textureLoader.load("../textures/skybox/sky_cubemap5.png"), side: THREE.BackSide }), // Top
+        new THREE.MeshBasicMaterial({ map: textureLoader.load("../textures/skybox/sky_cubemap6.png"), side: THREE.BackSide }), // Bottom
+        new THREE.MeshBasicMaterial({ map: textureLoader.load("../textures/skybox/sky_cubemap2.png"), side: THREE.BackSide }), // Front
+        new THREE.MeshBasicMaterial({ map: textureLoader.load("../textures/skybox/sky_cubemap4.png"), side: THREE.BackSide })  // Back
     ];
     const skyboxGeometry = new THREE.BoxGeometry(50, 50, 50); // Large cube
     const skybox = new THREE.Mesh(skyboxGeometry, materials);
