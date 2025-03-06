@@ -77,15 +77,13 @@ function loadProduct() {
 
         // Rotate to make it stand upright
         productModel.rotation.x = -Math.PI / 2; // Stand the phone up
-
-        // Rotate 180° on the Y-axis to flip it correctly
-        productModel.rotation.y = Math.PI;
+        productModel.rotation.y = Math.PI; // Rotate 180° on Y-axis to fix orientation
 
         // Move slightly up so it doesn’t clip into the floor
         productModel.position.y = 1;
 
-        // Force apply initial color (Red)
-        const initialColor = new THREE.Color(initialColor.color);
+        // Convert initialColor to a Three.js Color
+        const appliedColor = new THREE.Color(initialColor.color);
 
         // Enable shadows and apply the initial color
         productModel.traverse((child) => {
@@ -95,7 +93,7 @@ function loadProduct() {
 
                 // Apply the color while keeping the material properties
                 if (child.material) {
-                    child.material.color = initialColor;
+                    child.material.color.set(appliedColor);
                     child.material.needsUpdate = true;
                 }
             }
@@ -104,6 +102,7 @@ function loadProduct() {
         scene.add(productModel);
     });
 }
+
 
 
 
