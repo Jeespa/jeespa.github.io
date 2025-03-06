@@ -7,6 +7,7 @@ import {GUI} from "../lib/lil-gui.module.min.js";
 let scene, camera, renderer, controls, productModel;
 let mainCamera, topCamera, zoomCamera;
 const productPath = "../models/phone/iphone_mini.glb"; // Change to your model
+const initialColor = { color: "#ff0000" }; // Global initial color of the product
 
 init();
 loadProduct();
@@ -27,15 +28,15 @@ function init() {
     // Cameras
     const aspect = window.innerWidth / window.innerHeight;
     mainCamera = new THREE.PerspectiveCamera(45, aspect, 0.1, 100);
-    mainCamera.position.set(3, 1.5, 5);
+    mainCamera.position.set(1.5, 1, 2);
     mainCamera.lookAt(0, 1, 0);
     
     topCamera = new THREE.OrthographicCamera(-5, 5, 5, -5, 0.1, 100);
-    topCamera.position.set(0, 8, 0);
+    topCamera.position.set(0, 3, 0);
     topCamera.lookAt(0, 0, 0);
     
     zoomCamera = new THREE.PerspectiveCamera(50, aspect, 0.1, 100);
-    zoomCamera.position.set(1.5, 1, 2);
+    zoomCamera.position.set(1, 0.5, 1);
     zoomCamera.lookAt(0, 1, 0);
     
     camera = mainCamera;
@@ -75,23 +76,35 @@ function loadProduct() {
         productModel.scale.set(2, 2, 2); // Increase size (adjust if needed)
 
         // Rotate to make it stand upright
-        productModel.rotation.x = -Math.PI / 2; // Correct initial orientation
-        productModel.rotation.z = Math.PI; // Flip it 180° to be upright
+        productModel.rotation.x = -Math.PI / 2; // Stand the phone up
+
+        // Rotate 180° on the Y-axis to flip it correctly
+        productModel.rotation.y = Math.PI;
 
         // Move slightly up so it doesn’t clip into the floor
         productModel.position.y = 1;
 
-        // Enable shadows
+        // Force apply initial color (Red)
+        const initialColor = new THREE.Color(initialColor.color);
+
+        // Enable shadows and apply the initial color
         productModel.traverse((child) => {
             if (child.isMesh) {
                 child.castShadow = true;
                 child.receiveShadow = true;
+
+                // Apply the color while keeping the material properties
+                if (child.material) {
+                    child.material.color = initialColor;
+                    child.material.needsUpdate = true;
+                }
             }
         });
 
         scene.add(productModel);
     });
 }
+
 
 
 function setupGUI() {
@@ -103,7 +116,7 @@ function setupGUI() {
     cameraFolder.open();
 
     const colorFolder = gui.addFolder('Product Customization');
-    colorFolder.addColor({ color: '#ff0000' }, 'color').onChange((value) => {
+    colorFolder.addColor(initialColor, 'color').onChange((value) => {
         productModel.traverse((child) => {
             if (child.isMesh) child.material.color.set(value);
         });
