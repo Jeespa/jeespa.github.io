@@ -5,7 +5,7 @@ import {TWEEN} from "../lib/tween.module.min.js";
 import {GUI} from "../lib/lil-gui.module.min.js";
 
 let scene, camera, renderer, controls, productModel;
-let mainCamera, topCamera, zoomCamera;
+let freeCamera, mainCamera, topCamera, zoomCamera;
 const productPath = "../models/phone/iphone_mini.glb"; // Change to your model
 const initialColor = { color: "#ff0000" }; // Global initial color of the product
 const cameraPositions = {
