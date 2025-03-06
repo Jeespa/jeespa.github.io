@@ -137,18 +137,19 @@ function switchCamera(newCamera) {
     if (newCamera === mainCamera) {
         mainCamera.position.copy(cameraPositions.main.position);
         mainCamera.lookAt(cameraPositions.main.lookAt);
-        controls.enabled = true; // Enable OrbitControls
+        controls.target.copy(cameraPositions.main.lookAt); // Reset controls
     } else if (newCamera === zoomCamera) {
         zoomCamera.position.copy(cameraPositions.zoom.position);
         zoomCamera.lookAt(cameraPositions.zoom.lookAt);
-        controls.enabled = true; // Enable OrbitControls
+        controls.target.copy(cameraPositions.zoom.lookAt); // Reset controls
     } else if (newCamera === topCamera) {
         // Reset topCamera position & manually set its frustum
         topCamera.position.copy(cameraPositions.top.position);
-
-        // Ensure Top Camera is looking straight down
-        topCamera.up.set(0, 0, -1); // Fix camera orientation
         topCamera.lookAt(cameraPositions.top.lookAt);
+        controls.target.copy(cameraPositions.top.lookAt); // Reset controls
+
+        // Ensure topCamera is looking straight down
+        topCamera.up.set(0, 0, -1);
 
         // Update aspect ratio & projection for topCamera
         const aspect = window.innerWidth / window.innerHeight;
@@ -157,9 +158,6 @@ function switchCamera(newCamera) {
         topCamera.top = 5;
         topCamera.bottom = -5;
         topCamera.updateProjectionMatrix();
-
-        // Disable OrbitControls when using Top Camera
-        controls.enabled = false;
     }
 
     // Update active camera
@@ -167,6 +165,7 @@ function switchCamera(newCamera) {
     controls.object = camera;
     controls.update();
 }
+
 
 function animate() {
     requestAnimationFrame(animate);
@@ -181,7 +180,7 @@ function onWindowResize() {
     mainCamera.updateProjectionMatrix();
     zoomCamera.updateProjectionMatrix();
 
-    // Update `topCamera` correctly when resizing
+    // Update topCamera correctly when resizing
     topCamera.left = -5 * aspect;
     topCamera.right = 5 * aspect;
     topCamera.top = 5;
@@ -190,3 +189,4 @@ function onWindowResize() {
 
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
+
