@@ -27,15 +27,15 @@ function init() {
     // Cameras
     const aspect = window.innerWidth / window.innerHeight;
     mainCamera = new THREE.PerspectiveCamera(45, aspect, 0.1, 100);
-    mainCamera.position.set(5, 2, 8);
+    mainCamera.position.set(3, 1.5, 5);
     mainCamera.lookAt(0, 1, 0);
     
     topCamera = new THREE.OrthographicCamera(-5, 5, 5, -5, 0.1, 100);
-    topCamera.position.set(0, 10, 0);
+    topCamera.position.set(0, 8, 0);
     topCamera.lookAt(0, 0, 0);
     
     zoomCamera = new THREE.PerspectiveCamera(50, aspect, 0.1, 100);
-    zoomCamera.position.set(2, 1, 3);
+    zoomCamera.position.set(1.5, 1, 2);
     zoomCamera.lookAt(0, 1, 0);
     
     camera = mainCamera;
@@ -70,15 +70,28 @@ function loadProduct() {
     const loader = new GLTFLoader();
     loader.load(productPath, (gltf) => {
         productModel = gltf.scene;
+
+        // Adjust model scale
+        productModel.scale.set(2, 2, 2); // Increase size (adjust if needed)
+
+        // Rotate to make it stand upright
+        productModel.rotation.x = -Math.PI / 2; // Correct orientation
+
+        // Move slightly up so it doesn’t clip into the floor
+        productModel.position.y = 1;
+
+        // Enable shadows
         productModel.traverse((child) => {
             if (child.isMesh) {
                 child.castShadow = true;
                 child.receiveShadow = true;
             }
         });
+
         scene.add(productModel);
     });
 }
+
 
 function setupGUI() {
     const gui = new GUI();
