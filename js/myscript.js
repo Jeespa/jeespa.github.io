@@ -189,7 +189,7 @@ function loadSkybox() {
         createMaterial("../textures/skybox/sky_cubemap4.png")  // Back
     ];
 
-    const skyboxGeometry = new THREE.BoxGeometry(50, 50, 50); // Large cube
+    const skyboxGeometry = new THREE.BoxGeometry(51, 51, 51); // Large cube
     const skybox = new THREE.Mesh(skyboxGeometry, materials);
     scene.add(skybox);
 }
