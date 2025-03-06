@@ -75,7 +75,8 @@ function loadProduct() {
         productModel.scale.set(2, 2, 2); // Increase size (adjust if needed)
 
         // Rotate to make it stand upright
-        productModel.rotation.x = -Math.PI / 2; // Correct orientation
+        productModel.rotation.x = -Math.PI / 2; // Correct initial orientation
+        productModel.rotation.z = Math.PI; // Flip it 180° to be upright
 
         // Move slightly up so it doesn’t clip into the floor
         productModel.position.y = 1;
