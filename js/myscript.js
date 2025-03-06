@@ -17,7 +17,7 @@ const cameraPositions = {
 };
 
 init();
-loadHDRILikeBackground();
+loadSkybox();
 loadProduct();
 setupGUI();
 animate();
@@ -168,13 +168,22 @@ function switchCamera(newCamera) {
 }
 
 
-function loadHDRILikeBackground() {
-    const loader = new THREE.TextureLoader();
-    loader.load("../textures/sky/sky_cubemap.png", function (texture) {
-        texture.mapping = THREE.EquirectangularReflectionMapping;
-        scene.background = texture;
-    });
+function loadSkybox() {
+    const textureLoader = new THREE.TextureLoader();
+    const materials = [
+        new THREE.MeshBasicMaterial({ map: textureLoader.load("../textures/skybox/cubemap3.png"), side: THREE.BackSide }), // Right
+        new THREE.MeshBasicMaterial({ map: textureLoader.load("../textures/skybox/cubemap.png"), side: THREE.BackSide }), // Left
+        new THREE.MeshBasicMaterial({ map: textureLoader.load("../textures/skybox/cubemap5.png"), side: THREE.BackSide }), // Top
+        new THREE.MeshBasicMaterial({ map: textureLoader.load("../textures/skybox/cubemap6.png"), side: THREE.BackSide }), // Bottom
+        new THREE.MeshBasicMaterial({ map: textureLoader.load("../textures/skybox/cubemap2.png"), side: THREE.BackSide }), // Front
+        new THREE.MeshBasicMaterial({ map: textureLoader.load("../textures/skybox/cubemap4.png"), side: THREE.BackSide })  // Back
+    ];
+    const skyboxGeometry = new THREE.BoxGeometry(50, 50, 50); // Large cube
+    const skybox = new THREE.Mesh(skyboxGeometry, materials);
+    scene.add(skybox);
 }
+
+
 
 function animate() {
     requestAnimationFrame(animate);
