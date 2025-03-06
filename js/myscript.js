@@ -6,7 +6,8 @@ import { GUI } from "../lib/lil-gui.module.min.js";
 
 let scene, camera, renderer, controls, productModel;
 let mainCamera, topCamera, zoomCamera;
-const productPath = "../models/phone/iphone_mini.glb"; // Change to your model
+/* const productPath = "../models/phone/iphone_mini.glb"; */
+const productPath = "../models/Samsung/samsung_s24_ultra.glb"; 
 const initialColor = { color: "#ff0000" }; // Global initial color of the product
 
 // Camera positions & reset points
