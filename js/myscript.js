@@ -173,34 +173,26 @@ function loadSkybox() {
 
     function createMaterial(imagePath) {
         const texture = textureLoader.load(imagePath);
-        texture.magFilter = THREE.NearestFilter; // Avoids blurring
-        texture.minFilter = THREE.NearestMipMapNearestFilter; // Avoids texture blending issues
-        texture.wrapS = THREE.RepeatWrapping; // Ensures correct wrapping
-        texture.wrapT = THREE.RepeatWrapping;
+        texture.magFilter = THREE.LinearFilter; // Prevents pixelation
+        texture.minFilter = THREE.LinearMipMapLinearFilter; // Smooths out seams
+        texture.wrapS = THREE.ClampToEdgeWrapping;
+        texture.wrapT = THREE.ClampToEdgeWrapping;
         return new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide });
     }
 
     const materials = [
-        createMaterial("../textures/skybox/sky_cubemap3.png"), // Right
-        createMaterial("../textures/skybox/sky_cubemap.png"), // Left
-        createMaterial("../textures/skybox/sky_cubemap5.png"), // Top
-        createMaterial("../textures/skybox/sky_cubemap6.png"), // Bottom
-        createMaterial("../textures/skybox/sky_cubemap2.png"), // Front
-        createMaterial("../textures/skybox/sky_cubemap4.png")  // Back
+        createMaterial("../textures/skybox/px.png"), // Right
+        createMaterial("../textures/skybox/nx.png"), // Left
+        createMaterial("../textures/skybox/py.png"), // Top
+        createMaterial("../textures/skybox/ny.png"), // Bottom
+        createMaterial("../textures/skybox/pz.png"), // Front
+        createMaterial("../textures/skybox/nz.png")  // Back
     ];
 
-    // Increase cube size slightly to remove possible gaps
-    const skyboxGeometry = new THREE.BoxGeometry(52, 52, 52); // Slightly bigger cube
-
-    // Slightly scale UV mapping to fix seams
-    skyboxGeometry.attributes.uv.array.forEach((value, index) => {
-        skyboxGeometry.attributes.uv.array[index] = value * 0.99 + 0.005;
-    });
-
+    const skyboxGeometry = new THREE.BoxGeometry(51, 51, 51); // Large cube
     const skybox = new THREE.Mesh(skyboxGeometry, materials);
     scene.add(skybox);
 }
-
 
 
 
