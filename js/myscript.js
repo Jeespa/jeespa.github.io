@@ -11,7 +11,7 @@ const initialColor = { color: "#ff0000" }; // Global initial color of the produc
 const cameraPositions = {
     main: { position: new THREE.Vector3(1.5, 1, 2), lookAt: new THREE.Vector3(0, 1, 0) },
     zoom: { position: new THREE.Vector3(1, 0.5, 1), lookAt: new THREE.Vector3(0, 1, 0) },
-    top: { position: new THREE.Vector3(0, 3, 0), lookAt: new THREE.Vector3(0, 0, 0) }
+    top: { position: new THREE.Vector3(0, 1, 0), lookAt: new THREE.Vector3(0, 0, 0) }
 };
 
 init();
@@ -148,6 +148,12 @@ function switchCamera(newCamera, resetPosition) {
             topCamera.position.copy(cameraPositions.top.position);
             topCamera.lookAt(cameraPositions.top.lookAt);
         }
+    }
+
+    // If switching to Free Camera, update its aspect ratio
+    if (newCamera === freeCamera) {
+        freeCamera.aspect = window.innerWidth / window.innerHeight;
+        freeCamera.updateProjectionMatrix();
     }
 
     // Update active camera
