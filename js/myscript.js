@@ -147,6 +147,14 @@ function switchCamera(newCamera, resetPosition) {
         } else if (newCamera === topCamera) {
             topCamera.position.copy(cameraPositions.top.position);
             topCamera.lookAt(cameraPositions.top.lookAt);
+
+            // Update aspect ratio & projection for orthographic camera
+            const aspect = window.innerWidth / window.innerHeight;
+            topCamera.left = -5 * aspect;
+            topCamera.right = 5 * aspect;
+            topCamera.top = 5;
+            topCamera.bottom = -5;
+            topCamera.updateProjectionMatrix();
         }
     }
 
