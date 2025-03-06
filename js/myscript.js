@@ -1,17 +1,19 @@
 import * as THREE from "../lib/three.module.js";
-import {GLTFLoader} from "../lib/GLTFLoader.module.js";
-import {OrbitControls} from "../lib/OrbitControls.module.js";
-import {TWEEN} from "../lib/tween.module.min.js";
-import {GUI} from "../lib/lil-gui.module.min.js";
+import { GLTFLoader } from "../lib/GLTFLoader.module.js";
+import { OrbitControls } from "../lib/OrbitControls.module.js";
+import { TWEEN } from "../lib/tween.module.min.js";
+import { GUI } from "../lib/lil-gui.module.min.js";
 
 let scene, camera, renderer, controls, productModel;
-let freeCamera, mainCamera, topCamera, zoomCamera;
+let mainCamera, topCamera, zoomCamera;
 const productPath = "../models/phone/iphone_mini.glb"; // Change to your model
 const initialColor = { color: "#ff0000" }; // Global initial color of the product
+
+// Camera positions & reset points
 const cameraPositions = {
     main: { position: new THREE.Vector3(1.5, 1, 2), lookAt: new THREE.Vector3(0, 1, 0) },
     zoom: { position: new THREE.Vector3(1, 0.5, 1), lookAt: new THREE.Vector3(0, 1, 0) },
-    top: { position: new THREE.Vector3(0, 1, 0), lookAt: new THREE.Vector3(0, 0, 0) }
+    top: { position: new THREE.Vector3(0, 1.5, 0), lookAt: new THREE.Vector3(0, 0, 0) }
 };
 
 init();
@@ -42,14 +44,9 @@ function init() {
     zoomCamera.position.copy(cameraPositions.zoom.position);
     zoomCamera.lookAt(cameraPositions.zoom.lookAt);
 
-    topCamera = new THREE.OrthographicCamera(-5, 5, 5, -5, 0.1, 100);
+    topCamera = new THREE.OrthographicCamera(-5 * aspect, 5 * aspect, 5, -5, 0.1, 100);
     topCamera.position.copy(cameraPositions.top.position);
     topCamera.lookAt(cameraPositions.top.lookAt);
-
-    // Free Camera (Initially Same as Main)
-    freeCamera = new THREE.PerspectiveCamera(45, aspect, 0.1, 100);
-    freeCamera.position.copy(mainCamera.position);
-    freeCamera.lookAt(cameraPositions.main.lookAt);
 
     // Default Camera
     camera = mainCamera;
@@ -77,7 +74,7 @@ function init() {
     floor.receiveShadow = true;
     scene.add(floor);
 
-    window.addEventListener('resize', onWindowResize);
+    window.addEventListener("resize", onWindowResize);
 }
 
 function loadProduct() {
@@ -118,16 +115,16 @@ function loadProduct() {
 
 function setupGUI() {
     const gui = new GUI();
-    const cameraFolder = gui.addFolder('Camera Views');
+    const cameraFolder = gui.addFolder("Camera Views");
 
-    cameraFolder.add({ main: () => switchCamera(mainCamera, true) }, 'main').name('Main View');
-    cameraFolder.add({ top: () => switchCamera(topCamera, true) }, 'top').name('Top View');
-    cameraFolder.add({ zoom: () => switchCamera(zoomCamera, true) }, 'zoom').name('Zoom View');
-    cameraFolder.add({ free: () => switchCamera(freeCamera, false) }, 'free').name('Free Cam');
+    cameraFolder.add({ main: () => switchCamera(mainCamera) }, "main").name("Main View");
+    cameraFolder.add({ top: () => switchCamera(topCamera) }, "top").name("Top View");
+    cameraFolder.add({ zoom: () => switchCamera(zoomCamera) }, "zoom").name("Zoom View");
+
     cameraFolder.open();
 
-    const colorFolder = gui.addFolder('Product Customization');
-    colorFolder.addColor(initialColor, 'color').onChange((value) => {
+    const colorFolder = gui.addFolder("Product Customization");
+    colorFolder.addColor(initialColor, "color").onChange((value) => {
         productModel.traverse((child) => {
             if (child.isMesh) child.material.color.set(value);
         });
@@ -135,33 +132,25 @@ function setupGUI() {
     colorFolder.open();
 }
 
-function switchCamera(newCamera, resetPosition) {
-    // If switching to a fixed camera, reset its position dynamically
-    if (resetPosition) {
-        if (newCamera === mainCamera) {
-            mainCamera.position.copy(cameraPositions.main.position);
-            mainCamera.lookAt(cameraPositions.main.lookAt);
-        } else if (newCamera === zoomCamera) {
-            zoomCamera.position.copy(cameraPositions.zoom.position);
-            zoomCamera.lookAt(cameraPositions.zoom.lookAt);
-        } else if (newCamera === topCamera) {
-            topCamera.position.copy(cameraPositions.top.position);
-            topCamera.lookAt(cameraPositions.top.lookAt);
+function switchCamera(newCamera) {
+    // Reset camera position and target dynamically
+    if (newCamera === mainCamera) {
+        mainCamera.position.copy(cameraPositions.main.position);
+        mainCamera.lookAt(cameraPositions.main.lookAt);
+    } else if (newCamera === zoomCamera) {
+        zoomCamera.position.copy(cameraPositions.zoom.position);
+        zoomCamera.lookAt(cameraPositions.zoom.lookAt);
+    } else if (newCamera === topCamera) {
+        topCamera.position.copy(cameraPositions.top.position);
+        topCamera.lookAt(cameraPositions.top.lookAt);
 
-            // Update aspect ratio & projection for orthographic camera
-            const aspect = window.innerWidth / window.innerHeight;
-            topCamera.left = -5 * aspect;
-            topCamera.right = 5 * aspect;
-            topCamera.top = 5;
-            topCamera.bottom = -5;
-            topCamera.updateProjectionMatrix();
-        }
-    }
-
-    // If switching to Free Camera, update its aspect ratio
-    if (newCamera === freeCamera) {
-        freeCamera.aspect = window.innerWidth / window.innerHeight;
-        freeCamera.updateProjectionMatrix();
+        // Update aspect ratio & projection for orthographic camera
+        const aspect = window.innerWidth / window.innerHeight;
+        topCamera.left = -5 * aspect;
+        topCamera.right = 5 * aspect;
+        topCamera.top = 5;
+        topCamera.bottom = -5;
+        topCamera.updateProjectionMatrix();
     }
 
     // Update active camera
@@ -182,8 +171,13 @@ function onWindowResize() {
     zoomCamera.aspect = aspect;
     mainCamera.updateProjectionMatrix();
     zoomCamera.updateProjectionMatrix();
+
+    // Update top camera correctly
     topCamera.left = -5 * aspect;
     topCamera.right = 5 * aspect;
+    topCamera.top = 5;
+    topCamera.bottom = -5;
     topCamera.updateProjectionMatrix();
+
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
