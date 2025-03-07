@@ -111,7 +111,7 @@ function init() {
     directionalLight.shadow.mapSize.width = 2048;
     directionalLight.shadow.mapSize.height = 2048;
     scene.add(directionalLight);
-    
+
     // Floor
     const floor = new THREE.Mesh(
         new THREE.PlaneGeometry(50, 50),
@@ -134,6 +134,7 @@ function loadProducts() {
             model.position.copy(position);
             model.scale.set(scale, scale, scale);
             model.userData.isFlipped = false;
+            model.userData.isSpinning = false; // Add spinning property
 
             let group = new THREE.Group();
             group.add(model);
@@ -141,7 +142,6 @@ function loadProducts() {
             model.position.set(0, 0, 0);
             group.position.copy(position);
 
-            // ✅ Correct rotation logic
             if (name === "samsung") {
                 model.rotation.x = Math.PI;
                 model.rotation.z = Math.PI;
@@ -151,7 +151,7 @@ function loadProducts() {
                 model.rotation.y = Math.PI / 2;
             }
 
-            // ✅ Fix pivot point
+            // Fix pivot point
             let box = new THREE.Box3().setFromObject(model);
             let center = new THREE.Vector3();
             box.getCenter(center);
@@ -218,12 +218,18 @@ function setupGUI() {
 
     // Flip Phones
     const flipFolder = gui.addFolder("Flip Phones");
-
     models.forEach(({ name, displayName }) => {
         flipFolder.add({ flip: () => toggleFlip(loadedModels[name]) }, "flip").name(`Flip ${displayName}`);
     });
-
     flipFolder.open();
+
+    // Spinning Controls
+    const spinFolder = gui.addFolder("Enable/Disable Rotation");
+    models.forEach(({ name, displayName }) => {
+        spinFolder.add(loadedModels[name].userData, "isSpinning")
+            .name(`Spin ${displayName}`);
+    });
+    spinFolder.open();
 }
 
 function switchCamera(phone, view) {
@@ -234,17 +240,22 @@ function switchCamera(phone, view) {
 
     let targetPosition = cameraPositions[phone][view];
 
-    new TWEEN.Tween(camera.position)
-        .to(targetPosition.position, 1000) // Transition over 1 second
-        .easing(TWEEN.Easing.Quadratic.Out)
-        .start();
+    let startLookAt = controls.target.clone(); // Current lookAt target
+    let endLookAt = targetPosition.lookAt.clone(); // New lookAt target
 
-    new TWEEN.Tween(controls.target)
-        .to(targetPosition.lookAt, 1000)
+    new TWEEN.Tween(camera.position)
+        .to(targetPosition.position, 1000) // ✅ Smooth move to position
         .easing(TWEEN.Easing.Quadratic.Out)
+        .onUpdate(() => {
+            controls.target.lerpVectors(startLookAt, endLookAt, 0.1); // ✅ Smoothly change lookAt
+            camera.lookAt(controls.target); // ✅ Ensure the camera follows smoothly
+        })
+        .onComplete(() => {
+            controls.target.copy(endLookAt); // ✅ Set final lookAt target
+            controls.update();
+        })
         .start();
 }
-
 
 function loadSkybox() {
     const textureLoader = new THREE.TextureLoader();
@@ -275,8 +286,17 @@ function loadSkybox() {
 function animate() {
     requestAnimationFrame(animate);
     TWEEN.update();
+
+    // Rotate only if spinning is enabled
+    Object.keys(loadedModels).forEach(name => {
+        if (loadedModels[name].userData.isSpinning) {
+            loadedModels[name].rotation.y += 0.002; // Slow rotation
+        }
+    });
+
     renderer.render(scene, camera);
 }
+
 
 function onWindowResize() {
     const aspect = window.innerWidth / window.innerHeight;
