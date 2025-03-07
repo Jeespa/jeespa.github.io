@@ -36,7 +36,7 @@ const cameraPositions = {
 };
 
 const video = document.createElement("video");
-video.src = "../videos/pixar.mp4"; // Path to your video
+video.src = "../videos/Pixar.mp4"; // Path to your video
 video.loop = true;
 video.muted = true;  // Mute to allow autoplay
 video.play();
