@@ -5,24 +5,13 @@ import { TWEEN } from "../lib/tween.module.min.js";
 import { GUI } from "../lib/lil-gui.module.min.js";
 
 let scene, camera, renderer, controls;
-let mainCamera, topCamera, zoomCamera;
-let loadedModels, cameras = {}; // Store models and their flip state
+let loadedModels, cameras = {};
 //const initialColor = { color: "#000000" };
 
 // Paths for models
 const models = [
-    { 
-        name: "iPhone 16 Pro Max", 
-        path: "../models/iPhone16/iphone_16_pro_max.glb", 
-        position: new THREE.Vector3(0, 1, 0), 
-        scale: 1 
-    },
-    { 
-        name: "Samsung S24 Ultra", 
-        path: "../models/Samsung/samsung_s24_ultra.glb", 
-        position: new THREE.Vector3(1.5, 1.01, 0), 
-        scale: 0.39
-    }
+    { name: "iPhone", displayName: "iPhone 16 Pro Max", path: "../models/iPhone16/iphone_16_pro_max.glb", position: new THREE.Vector3(0, 1, 0), scale: 1 },
+    { name: "samsung", displayName: "Samsung S24 Ultra", path: "../models/Samsung/samsung_s24_ultra.glb", position: new THREE.Vector3(1.5, 1.01, 0), scale: 0.39 }
 ];
 
 
@@ -61,6 +50,8 @@ function init() {
 
     const aspect = window.innerWidth / window.innerHeight;
 
+    cameras = {};
+    
     // Initialize cameras dynamically for each phone
     Object.keys(cameraPositions).forEach(phone => {
         cameras[phone] = {}; // Create sub-object for the phone cameras
@@ -255,14 +246,25 @@ function animate() {
 
 function onWindowResize() {
     const aspect = window.innerWidth / window.innerHeight;
-    mainCamera.aspect = aspect;
-    zoomCamera.aspect = aspect;
-    mainCamera.updateProjectionMatrix();
-    zoomCamera.updateProjectionMatrix();
-    topCamera.left = -5 * aspect;
-    topCamera.right = 5 * aspect;
-    topCamera.top = 5;
-    topCamera.bottom = -5;
-    topCamera.updateProjectionMatrix();
+
+    // Update all cameras dynamically
+    Object.keys(cameras).forEach(phone => {
+        Object.keys(cameras[phone]).forEach(view => {
+            let cam = cameras[phone][view];
+
+            if (cam.isPerspectiveCamera) {
+                cam.aspect = aspect;
+                cam.updateProjectionMatrix();
+            } else if (cam.isOrthographicCamera) {
+                cam.left = -5 * aspect;
+                cam.right = 5 * aspect;
+                cam.top = 5;
+                cam.bottom = -5;
+                cam.updateProjectionMatrix();
+            }
+        });
+    });
+
+    // Resize renderer
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
