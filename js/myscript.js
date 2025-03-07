@@ -7,20 +7,17 @@ import { GUI } from "../lib/lil-gui.module.min.js";
 let scene, camera, renderer, controls;
 let loadedModels = {}
 let cameras = {};
-//const initialColor = { color: "#000000" };
 
 // Paths for models
 const models = [
     { name: "iPhone", displayName: "iPhone 16 Pro Max", path: "../models/iPhone16/iphone_16_pro_max.glb", position: new THREE.Vector3(0, 1, 0), scale: 1 },
-    { name: "samsung", displayName: "Samsung S24 Ultra", path: "../models/Samsung/samsung_s24_ultra.glb", position: new THREE.Vector3(1.5, 1.01, 0), scale: 0.39 }
+    { name: "Samsung", displayName: "Samsung S24 Ultra", path: "../models/Samsung/samsung_s24_ultra.glb", position: new THREE.Vector3(1.5, 1.01, 0), scale: 0.39 }
 ];
 
 // Camera positions
 const cameraPositions = {
     main: {
         main: { position: new THREE.Vector3(1, 2, 7), lookAt: new THREE.Vector3(0.75, 1, 0) },
-        zoom: { position: new THREE.Vector3(1, 2, 5), lookAt: new THREE.Vector3(0.75, 1, 0) }, // ✅ Add more views
-        top: { position: new THREE.Vector3(1, 3, 0), lookAt: new THREE.Vector3(1, 1, 0) }
     },
     iPhone: {
         main: { position: new THREE.Vector3(-1, 1.5, 5), lookAt: new THREE.Vector3(0, 1, 0) },
@@ -29,7 +26,7 @@ const cameraPositions = {
         front: { position: new THREE.Vector3(0, 1, 4), lookAt: new THREE.Vector3(0, 1, 0) },
         back: { position: new THREE.Vector3(0, 1, -4), lookAt: new THREE.Vector3(0, 1, 0) }
     },
-    samsung: {
+    Samsung: {
         main: { position: new THREE.Vector3(2.5, 1.5, 5), lookAt: new THREE.Vector3(1.5, 1, 0) },
         zoom: { position: new THREE.Vector3(1.5, 1, 3), lookAt: new THREE.Vector3(1.5, 1, 0) },
         top: { position: new THREE.Vector3(1.5, 2.5, 0), lookAt: new THREE.Vector3(1.5, 1, 0) },
@@ -37,9 +34,6 @@ const cameraPositions = {
         back: { position: new THREE.Vector3(1.5, 1, -4), lookAt: new THREE.Vector3(1.5, 1, 0) }
     }
 };
-
-
-
 
 init();
 loadSkybox();
@@ -57,11 +51,11 @@ function init() {
     document.body.appendChild(renderer.domElement);
 
     const aspect = window.innerWidth / window.innerHeight;
-    cameras = {}; // ✅ Reset camera storage
+    cameras = {}; // Reset camera storage
 
-    // ✅ Create Cameras for Each Section (Including "Main" Now)
+    // Create Cameras for Each Section (Including "Main" Now)
     Object.keys(cameraPositions).forEach(phone => {
-        cameras[phone] = {}; // ✅ Ensure cameras[phone] exists
+        cameras[phone] = {}; // Ensure cameras[phone] exists
 
         Object.keys(cameraPositions[phone]).forEach(view => {
             let targetPosition = cameraPositions[phone][view];
@@ -80,19 +74,19 @@ function init() {
 
             cam.position.copy(targetPosition.position);
             cam.lookAt(targetPosition.lookAt);
-            cameras[phone][view] = cam; // ✅ Store the camera correctly
+            cameras[phone][view] = cam; // Store the camera correctly
         });
     });
 
-    // ✅ Set the default camera
+    // Set the default camera
     camera = cameras.main.main; // Use the new structured main camera
 
-    // ✅ Initialize orbit controls
+    // Initialize orbit controls
     controls = new OrbitControls(camera, renderer.domElement);
     controls.target.set(0.75, 1, 0);
     controls.update();
 
-    // ✅ Lights
+    // Lights
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
 
@@ -103,7 +97,7 @@ function init() {
     directionalLight.shadow.mapSize.height = 2048;
     scene.add(directionalLight);
 
-    // ✅ Floor
+    // Floor
     const floor = new THREE.Mesh(
         new THREE.PlaneGeometry(50, 50),
         new THREE.MeshStandardMaterial({ color: 0xcccccc })
@@ -126,7 +120,7 @@ function loadProducts() {
             model.position.copy(position);
             model.scale.set(scale, scale, scale);
             
-            // ✅ Ensure isFlipped and isSpinning exist
+            // Ensure isFlipped and isSpinning exist
             model.userData.isFlipped = false;
             model.userData.isSpinning = false;
 
@@ -136,7 +130,7 @@ function loadProducts() {
             model.position.set(0, 0, 0);
             group.position.copy(position);
 
-            if (name === "samsung") {
+            if (name === "Samsung") {
                 model.rotation.x = Math.PI;
                 model.rotation.z = Math.PI;
             }
@@ -158,11 +152,11 @@ function loadProducts() {
             });
 
             scene.add(group);
-            loadedModels[name] = group; // ✅ Store the model
+            loadedModels[name] = group; // Store the model
 
             loadedCount++;
 
-            // ✅ Call setupGUI only after all models are fully loaded
+            // Call setupGUI only after all models are fully loaded
             if (loadedCount === models.length) {
                 setupGUI();
             }
@@ -188,7 +182,7 @@ function toggleFlip(model) {
 function setupGUI() {
     const gui = new GUI();
 
-    // ✅ Loop over all camera groups (including "main" now)
+    // Loop over all camera groups (including "main" now)
     Object.keys(cameraPositions).forEach(phone => {
         const folder = gui.addFolder(`${phone === "main" ? "General" : phone} Camera Views`);
 
@@ -199,7 +193,7 @@ function setupGUI() {
         folder.open();
     });
 
-    // ✅ Flip Phones
+    // Flip Phones
     const flipFolder = gui.addFolder("Flip Phones");
     models.forEach(({ name, displayName }) => {
         if (loadedModels[name]) {
@@ -208,7 +202,7 @@ function setupGUI() {
     });
     flipFolder.open();
 
-    // ✅ Spin Controls
+    // Spin Controls
     const spinFolder = gui.addFolder("Enable/Disable Rotation");
     models.forEach(({ name, displayName }) => {
         if (loadedModels[name] && typeof loadedModels[name].userData.isSpinning !== 'undefined') {
@@ -277,7 +271,7 @@ function animate() {
     requestAnimationFrame(animate);
     TWEEN.update();
 
-    // ✅ Rotate only if spinning is enabled
+    // Rotate only if spinning is enabled
     Object.keys(loadedModels).forEach(name => {
         if (loadedModels[name] && loadedModels[name].userData.isSpinning) {
             loadedModels[name].rotation.y += 0.002; // Slow rotation
@@ -290,13 +284,7 @@ function animate() {
 function onWindowResize() {
     const aspect = window.innerWidth / window.innerHeight;
 
-    // ✅ Update the general main camera separately
-    if (cameras.main) {
-        cameras.main.aspect = aspect;
-        cameras.main.updateProjectionMatrix();
-    }
-
-    // ✅ Update all phone cameras dynamically
+    // Loop through all cameras, including "main"
     Object.keys(cameras).forEach(phone => {
         Object.keys(cameras[phone]).forEach(view => {
             let cam = cameras[phone][view];
@@ -306,18 +294,23 @@ function onWindowResize() {
                 return;
             }
 
+            // Update perspective cameras
             if (cam.isPerspectiveCamera) {
                 cam.aspect = aspect;
                 cam.updateProjectionMatrix();
-            } else if (cam.isOrthographicCamera) {
-                cam.left = -5 * aspect;
-                cam.right = 5 * aspect;
-                cam.top = 5;
-                cam.bottom = -5;
+            } 
+            // Update orthographic cameras (top view)
+            else if (cam.isOrthographicCamera) {
+                let orthoSize = 2.5; // Adjust this value for closer zoom
+                cam.left = -orthoSize * aspect;
+                cam.right = orthoSize * aspect;
+                cam.top = orthoSize;
+                cam.bottom = -orthoSize;
                 cam.updateProjectionMatrix();
             }
         });
     });
 
+    // Resize renderer
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
