@@ -126,13 +126,20 @@ function loadProducts() {
     });
 }
 
-// Function to flip a model
-function toggleFlip(model) {
+function toggleFlip(model, modelName) {
     if (!model) return;
 
-    let targetRotation = model.userData.isFlipped
-        ? { y: model.rotation.y - Math.PI } // Flip back
-        : { y: model.rotation.y + Math.PI }; // Flip 180 degrees
+    let targetRotation = {};
+
+    if (modelName.includes("Samsung")) {
+        // Flip Samsung around Y-axis
+        targetRotation.y = model.userData.isFlipped ? model.rotation.y - Math.PI : model.rotation.y + Math.PI;
+    } 
+    
+    if (modelName.includes("iPhone")) {
+        // Flip iPhone around X-axis (since it's already rotated -90°)
+        targetRotation.x = model.userData.isFlipped ? model.rotation.x - Math.PI : model.rotation.x + Math.PI;
+    }
 
     new TWEEN.Tween(model.rotation)
         .to(targetRotation, 500) // Animate over 0.5s
@@ -153,10 +160,11 @@ function setupGUI() {
     // Add buttons to flip models
     const flipFolder = gui.addFolder("Flip Phones");
     Object.keys(loadedModels).forEach((key) => {
-        flipFolder.add({ flip: () => toggleFlip(loadedModels[key]) }, "flip").name(`Flip ${key}`);
+        flipFolder.add({ flip: () => toggleFlip(loadedModels[key], key) }, "flip").name(`Flip ${key}`);
     });
     flipFolder.open();
 }
+
 
 function switchCamera(newCamera) {
     if (newCamera === mainCamera) {
