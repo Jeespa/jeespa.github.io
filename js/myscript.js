@@ -176,6 +176,32 @@ function toggleFlip(model) {
     model.userData.isFlipped = !model.userData.isFlipped; // Toggle state
 }
 
+function resetScene() {
+    // Reset Camera to Main View
+    switchCamera("main", "main");
+
+    // Reset Phones (Position, Rotation, Spinning)
+    Object.keys(loadedModels).forEach(name => {
+        let modelGroup = loadedModels[name];
+        let initialPosition = models.find(m => m.name === name).position;
+
+        // Animate reset position
+        new TWEEN.Tween(modelGroup.position)
+            .to({ x: initialPosition.x, y: initialPosition.y, z: initialPosition.z }, 1000)
+            .easing(TWEEN.Easing.Quadratic.Out)
+            .start();
+
+        // Animate reset rotation
+        new TWEEN.Tween(modelGroup.rotation)
+            .to({ x: 0, y: 0, z: 0 }, 1000)
+            .easing(TWEEN.Easing.Quadratic.Out)
+            .start();
+
+        // Stop spinning
+        modelGroup.userData.isSpinning = false;
+    });
+}
+
 function setupGUI() {
     const gui = new GUI();
 
@@ -199,7 +225,7 @@ function setupGUI() {
     });
     flipFolder.open();
 
-    // ✅ Spin Controls (Fix: Use `group.userData.isSpinning`)
+    // Spin Controls
     const spinFolder = gui.addFolder("Enable/Disable Rotation");
     models.forEach(({ name, displayName }) => {
         if (loadedModels[name]) {
@@ -207,6 +233,9 @@ function setupGUI() {
         }
     });
     spinFolder.open();
+
+    // Add Reset Button
+    gui.add({ reset: resetScene }, "reset").name("Reset Scene");
 }
 
 function switchCamera(phone, view) {
