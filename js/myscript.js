@@ -131,43 +131,24 @@ function loadProducts() {
     models.forEach(({ name, path, position, scale }) => {
         loader.load(path, (gltf) => {
             const model = gltf.scene;
+            console.log(`Model Loaded: ${name}`);
+            console.log(model); // Logs the entire model structure
+
+            model.traverse((child) => {
+                console.log(`Child name: ${child.name}, Type: ${child.type}`);
+            });
+
             model.position.copy(position);
             model.scale.set(scale, scale, scale);
-
-            // Attach spinning property to the GROUP instead of just the model
+            
             let group = new THREE.Group();
             group.add(model);
             group.position.copy(position);
-            group.userData.isFlipped = false;
-            group.userData.isSpinning = false;  // Fix: Attach spinning to group
-
-            model.position.set(0, 0, 0);
-
-            if (name.toLowerCase() === "samsung") {
-                model.rotation.x = Math.PI;
-                model.rotation.z = Math.PI;
-            }
-            if (name.toLowerCase() === "iphone") {
-                model.rotation.y = Math.PI / 2;
-            }
-
-            let box = new THREE.Box3().setFromObject(model);
-            let center = new THREE.Vector3();
-            box.getCenter(center);
-            model.position.sub(center);
-
-            model.traverse((child) => {
-                if (child.isMesh) {
-                    child.castShadow = true;
-                    child.receiveShadow = true;
-                }
-            });
 
             scene.add(group);
-            loadedModels[name] = group; // Store the group, not just the model
+            loadedModels[name] = group;
 
             loadedCount++;
-
             if (loadedCount === models.length) {
                 setupGUI();
             }
