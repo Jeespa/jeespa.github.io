@@ -10,9 +10,8 @@ const initialColor = { color: "#ff0000" };
 
 // Paths for models
 const models = [
-    { path: "../models/iPhone12/iphone_mini.glb", position: new THREE.Vector3(-3, 1, 0), needsRotation: true },
-    { path: "../models/iPhone16/iphone16.gltf", position: new THREE.Vector3(0, 1, 0), needsRotation: false, isGLTF: true }, // Mark it as GLTF
-    { path: "../models/Samsung/samsung_s24_ultra.glb", position: new THREE.Vector3(3, 1, 0), needsRotation: false }
+    { path: "../models/iPhone12/iphone_mini.glb", position: new THREE.Vector3(-3, 1, 0), scale: 1 },
+    { path: "../models/Samsung/samsung_s24_ultra.glb", position: new THREE.Vector3(3, 1, 0), scale: 0.1 }
 ];
 
 // Camera positions
@@ -77,25 +76,19 @@ function init() {
 
 function loadProducts() {
     const loader = new GLTFLoader();
-
-    models.forEach(({ path, position, needsRotation, isGLTF }) => {
+    models.forEach(({ path, position, scale }) => {
         loader.load(path, (gltf) => {
             const model = gltf.scene;
             model.position.copy(position);
-            model.scale.set(2, 2, 2);
+            model.scale.set(scale, scale, scale);
 
-            if (needsRotation) {
-                model.rotation.x = -Math.PI / 2;
-                model.rotation.y = Math.PI;
+            if (path.includes("Samsung")) {
+                model.rotation.x = Math.PI;
             }
 
-            // Handle GLTF-specific materials and textures
-            if (isGLTF) {
-                gltf.scene.traverse((child) => {
-                    if (child.isMesh) {
-                        child.material.needsUpdate = true; // Ensure textures appear correctly
-                    }
-                });
+            if (path.includes("iPhone")) {
+                model.rotation.x = -Math.PI / 2;
+                model.rotation.y = Math.PI;
             }
 
             model.traverse((child) => {
@@ -110,7 +103,6 @@ function loadProducts() {
         });
     });
 }
-
 
 function setupGUI() {
     const gui = new GUI();
