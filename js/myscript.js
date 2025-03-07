@@ -219,15 +219,19 @@ function setupGUI() {
     // Flip Phones
     const flipFolder = gui.addFolder("Flip Phones");
     models.forEach(({ name, displayName }) => {
-        flipFolder.add({ flip: () => toggleFlip(loadedModels[name]) }, "flip").name(`Flip ${displayName}`);
+        if (loadedModels[name]) {  // ✅ Check if model exists before accessing name
+            flipFolder.add({ flip: () => toggleFlip(loadedModels[name]) }, "flip").name(`Flip ${displayName}`);
+        }
     });
     flipFolder.open();
 
-    // Spinning Controls
+    // Spin Controls
     const spinFolder = gui.addFolder("Enable/Disable Rotation");
     models.forEach(({ name, displayName }) => {
-        spinFolder.add(loadedModels[name].userData, "isSpinning")
-            .name(`Spin ${displayName}`);
+        if (loadedModels[name]) { // ✅ Check before adding to GUI
+            spinFolder.add(loadedModels[name].userData, "isSpinning")
+                .name(`Spin ${displayName}`);
+        }
     });
     spinFolder.open();
 }
