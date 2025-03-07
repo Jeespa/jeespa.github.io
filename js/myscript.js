@@ -5,7 +5,8 @@ import { TWEEN } from "../lib/tween.module.min.js";
 import { GUI } from "../lib/lil-gui.module.min.js";
 
 let scene, camera, renderer, controls;
-let loadedModels, cameras = {};
+let loadedModels = {}
+let cameras = {};
 //const initialColor = { color: "#000000" };
 
 // Paths for models
@@ -13,7 +14,6 @@ const models = [
     { name: "iPhone", displayName: "iPhone 16 Pro Max", path: "../models/iPhone16/iphone_16_pro_max.glb", position: new THREE.Vector3(0, 1, 0), scale: 1 },
     { name: "samsung", displayName: "Samsung S24 Ultra", path: "../models/Samsung/samsung_s24_ultra.glb", position: new THREE.Vector3(1.5, 1.01, 0), scale: 0.39 }
 ];
-
 
 // Camera positions
 const cameraPositions = {
@@ -32,7 +32,6 @@ const cameraPositions = {
         back: { position: new THREE.Vector3(1.5, 1, -4), lookAt: new THREE.Vector3(1.5, 1, 0) }
     }
 };
-
 
 init();
 loadSkybox();
@@ -91,7 +90,7 @@ function init() {
 
     // Floor
     const floor = new THREE.Mesh(
-        new THREE.PlaneGeometry(75, 75),
+        new THREE.PlaneGeometry(60, 60),
         new THREE.MeshStandardMaterial({ color: 0xcccccc })
     );
     floor.rotation.x = -Math.PI / 2;
@@ -127,7 +126,7 @@ function loadProducts() {
                 model.rotation.y = Math.PI / 2;
             }
 
-            // Fix pivot if needed
+            // Fix pivot point
             let box = new THREE.Box3().setFromObject(model);
             let center = new THREE.Vector3();
             box.getCenter(center);
