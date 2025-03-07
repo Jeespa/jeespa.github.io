@@ -12,7 +12,7 @@ const initialColor = { color: "#ff0000" };
 // Paths for models
 const models = [
     { path: "../models/iPhone12/iphone_mini.glb", position: new THREE.Vector3(0, 1, 0), scale: 1 },
-    { path: "../models/Samsung/samsung_s24_ultra.glb", position: new THREE.Vector3(1, 0.88, 0), scale: 0.1 }
+    { path: "../models/Samsung/samsung_s24_ultra.glb", position: new THREE.Vector3(1, 0.86, 0), scale: 0.1 }
 ];
 
 // Camera positions
@@ -25,7 +25,6 @@ const cameraPositions = {
 init();
 loadSkybox();
 loadProducts();
-setupGUI();
 animate();
 
 function init() {
@@ -77,12 +76,14 @@ function init() {
 
 function loadProducts() {
     const loader = new GLTFLoader();
+    let loadedCount = 0; // Track loaded models count
+
     models.forEach(({ path, position, scale }) => {
         loader.load(path, (gltf) => {
             const model = gltf.scene;
             model.position.copy(position);
             model.scale.set(scale, scale, scale);
-            model.userData.isFlipped = false; // Track flip state
+            model.userData.isFlipped = false;
 
             if (path.includes("Samsung")) {
                 model.rotation.x = Math.PI;
@@ -104,6 +105,11 @@ function loadProducts() {
 
             scene.add(model);
             loadedModels[path] = model; // Store the model
+
+            loadedCount++;
+            if (loadedCount === models.length) {
+                setupGUI(); // Call GUI setup only after all models are loaded
+            }
         });
     });
 }
