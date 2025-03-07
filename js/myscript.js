@@ -7,12 +7,12 @@ import { GUI } from "../lib/lil-gui.module.min.js";
 let scene, camera, renderer, controls;
 let mainCamera, topCamera, zoomCamera;
 let loadedModels = {}; // Store models and their flip state
-const initialColor = { color: "#ff0000" };
+const initialColor = { color: "#000000" };
 
 // Paths for models
 const models = [
     { path: "../models/iPhone16/iphone_16_pro_max.glb", position: new THREE.Vector3(0, 1, 0), scale: 1 },
-    { path: "../models/Samsung/samsung_s24_ultra.glb", position: new THREE.Vector3(1.5, 1.02, 0), scale: 0.39 }
+    { path: "../models/Samsung/samsung_s24_ultra.glb", position: new THREE.Vector3(1.5, 1.01, 0), scale: 0.39 }
 ];
 
 // Camera positions
