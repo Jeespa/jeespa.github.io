@@ -119,23 +119,21 @@ function loadProducts() {
             const model = gltf.scene;
             model.position.copy(position);
             model.scale.set(scale, scale, scale);
-            
-            // Ensure isFlipped and isSpinning exist
-            model.userData.isFlipped = false;
-            model.userData.isSpinning = false;
 
+            // ✅ Attach spinning property to the GROUP instead of just the model
             let group = new THREE.Group();
             group.add(model);
+            group.position.copy(position);
+            group.userData.isFlipped = false;
+            group.userData.isSpinning = false;  // ✅ Fix: Attach spinning to group
 
             model.position.set(0, 0, 0);
-            group.position.copy(position);
 
-            if (name === "Samsung") {
+            if (name.toLowerCase() === "samsung") {
                 model.rotation.x = Math.PI;
                 model.rotation.z = Math.PI;
             }
-
-            if (name === "iPhone") {
+            if (name.toLowerCase() === "iphone") {
                 model.rotation.y = Math.PI / 2;
             }
 
@@ -152,11 +150,10 @@ function loadProducts() {
             });
 
             scene.add(group);
-            loadedModels[name] = group; // Store the model
+            loadedModels[name] = group; // ✅ Store the group, not just the model
 
             loadedCount++;
 
-            // Call setupGUI only after all models are fully loaded
             if (loadedCount === models.length) {
                 setupGUI();
             }
@@ -182,7 +179,7 @@ function toggleFlip(model) {
 function setupGUI() {
     const gui = new GUI();
 
-    // Loop over all camera groups (including "main" now)
+    // Camera Views
     Object.keys(cameraPositions).forEach(phone => {
         const folder = gui.addFolder(`${phone === "main" ? "General" : phone} Camera Views`);
 
@@ -202,10 +199,10 @@ function setupGUI() {
     });
     flipFolder.open();
 
-    // Spin Controls
+    // ✅ Spin Controls (Fix: Use `group.userData.isSpinning`)
     const spinFolder = gui.addFolder("Enable/Disable Rotation");
     models.forEach(({ name, displayName }) => {
-        if (loadedModels[name] && typeof loadedModels[name].userData.isSpinning !== 'undefined') {
+        if (loadedModels[name]) {
             spinFolder.add(loadedModels[name].userData, "isSpinning").name(`Spin ${displayName}`);
         }
     });
@@ -271,7 +268,7 @@ function animate() {
     requestAnimationFrame(animate);
     TWEEN.update();
 
-    // Rotate only if spinning is enabled
+    // ✅ Rotate only if spinning is enabled
     Object.keys(loadedModels).forEach(name => {
         if (loadedModels[name] && loadedModels[name].userData.isSpinning) {
             loadedModels[name].rotation.y += 0.002; // Slow rotation
