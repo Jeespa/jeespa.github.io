@@ -17,25 +17,27 @@ const models = [
 
 // Camera positions
 const cameraPositions = {
-    main: { 
-        position: new THREE.Vector3(1, 2, 7), 
-        lookAt: new THREE.Vector3(0.75, 1, 0) 
+    main: {
+        main: { position: new THREE.Vector3(1, 2, 7), lookAt: new THREE.Vector3(0.75, 1, 0) },
+        zoom: { position: new THREE.Vector3(1, 2, 5), lookAt: new THREE.Vector3(0.75, 1, 0) }, // ✅ Add more views
+        top: { position: new THREE.Vector3(1, 3, 0), lookAt: new THREE.Vector3(1, 1, 0) }
     },
     iPhone: {
         main: { position: new THREE.Vector3(-1, 1.5, 5), lookAt: new THREE.Vector3(0, 1, 0) },
         zoom: { position: new THREE.Vector3(0, 1, 3), lookAt: new THREE.Vector3(0, 1, 0) },
-        top: { position: new THREE.Vector3(0, 2.5, 0), lookAt: new THREE.Vector3(0, 1, 0) }, // ✅ Moved closer
+        top: { position: new THREE.Vector3(0, 2.5, 0), lookAt: new THREE.Vector3(0, 1, 0) },
         front: { position: new THREE.Vector3(0, 1, 4), lookAt: new THREE.Vector3(0, 1, 0) },
         back: { position: new THREE.Vector3(0, 1, -4), lookAt: new THREE.Vector3(0, 1, 0) }
     },
     samsung: {
         main: { position: new THREE.Vector3(2.5, 1.5, 5), lookAt: new THREE.Vector3(1.5, 1, 0) },
         zoom: { position: new THREE.Vector3(1.5, 1, 3), lookAt: new THREE.Vector3(1.5, 1, 0) },
-        top: { position: new THREE.Vector3(1.5, 2.5, 0), lookAt: new THREE.Vector3(1.5, 1, 0) }, // ✅ Moved closer
+        top: { position: new THREE.Vector3(1.5, 2.5, 0), lookAt: new THREE.Vector3(1.5, 1, 0) },
         front: { position: new THREE.Vector3(1.5, 1, 4), lookAt: new THREE.Vector3(1.5, 1, 0) },
         back: { position: new THREE.Vector3(1.5, 1, -4), lookAt: new THREE.Vector3(1.5, 1, 0) }
     }
 };
+
 
 
 
@@ -51,25 +53,14 @@ function init() {
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Better shadow quality
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     document.body.appendChild(renderer.domElement);
 
     const aspect = window.innerWidth / window.innerHeight;
-    cameras = {}; // Initialize cameras object
+    cameras = {}; // ✅ Reset camera storage
 
-    // ✅ Create General Main Camera
-    if (cameraPositions.main) {
-        cameras.main = new THREE.PerspectiveCamera(50, aspect, 0.1, 100);
-        cameras.main.position.copy(cameraPositions.main.position);
-        cameras.main.lookAt(cameraPositions.main.lookAt);
-    } else {
-        console.error("Error: cameraPositions.main is missing!");
-    }
-
-    // ✅ Create Cameras for Each Phone
+    // ✅ Create Cameras for Each Section (Including "Main" Now)
     Object.keys(cameraPositions).forEach(phone => {
-        if (phone === "main") return; // Already initialized the general camera
-
         cameras[phone] = {}; // ✅ Ensure cameras[phone] exists
 
         Object.keys(cameraPositions[phone]).forEach(view => {
@@ -82,10 +73,10 @@ function init() {
 
             let cam;
             if (view === "top") {
-                cam = new THREE.OrthographicCamera(-2.5 * aspect, 2.5 * aspect, 2.5, -2.5, 0.1, 100); // ✅ Zoom in closer
+                cam = new THREE.OrthographicCamera(-2.5 * aspect, 2.5 * aspect, 2.5, -2.5, 0.1, 100);
             } else {
                 cam = new THREE.PerspectiveCamera(40, aspect, 0.1, 100);
-            }            
+            }
 
             cam.position.copy(targetPosition.position);
             cam.lookAt(targetPosition.lookAt);
@@ -93,15 +84,15 @@ function init() {
         });
     });
 
-    // ✅ Set the default camera to the general main view
-    camera = cameras.main || Object.values(cameras)[0]; // Fallback to any available camera
+    // ✅ Set the default camera
+    camera = cameras.main.main; // Use the new structured main camera
 
-    // Initialize orbit controls
+    // ✅ Initialize orbit controls
     controls = new OrbitControls(camera, renderer.domElement);
     controls.target.set(0.75, 1, 0);
     controls.update();
 
-    // Lights
+    // ✅ Lights
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
 
@@ -112,7 +103,7 @@ function init() {
     directionalLight.shadow.mapSize.height = 2048;
     scene.add(directionalLight);
 
-    // Floor
+    // ✅ Floor
     const floor = new THREE.Mesh(
         new THREE.PlaneGeometry(50, 50),
         new THREE.MeshStandardMaterial({ color: 0xcccccc })
@@ -123,6 +114,7 @@ function init() {
 
     window.addEventListener("resize", onWindowResize);
 }
+
 
 function loadProducts() {
     const loader = new GLTFLoader();
@@ -196,42 +188,30 @@ function toggleFlip(model) {
 function setupGUI() {
     const gui = new GUI();
 
-    // General Main Camera
-    const generalViewFolder = gui.addFolder("General Camera Views");
-    generalViewFolder.add({ main: () => switchCamera("main", "main") }, "main").name("Main View");
-    generalViewFolder.open();
+    // ✅ Loop over all camera groups (including "main" now)
+    Object.keys(cameraPositions).forEach(phone => {
+        const folder = gui.addFolder(`${phone === "main" ? "General" : phone} Camera Views`);
 
-    // iPhone Cameras
-    const iphoneCameraFolder = gui.addFolder("iPhone 16 Pro Max - Camera Views");
-    iphoneCameraFolder.add({ main: () => switchCamera("iPhone", "main") }, "main").name("Main View");
-    iphoneCameraFolder.add({ zoom: () => switchCamera("iPhone", "zoom") }, "zoom").name("Zoom View");
-    iphoneCameraFolder.add({ top: () => switchCamera("iPhone", "top") }, "top").name("Top View");
-    iphoneCameraFolder.add({ front: () => switchCamera("iPhone", "front") }, "front").name("Front View");
-    iphoneCameraFolder.add({ back: () => switchCamera("iPhone", "back") }, "back").name("Back View");
-    iphoneCameraFolder.open();
+        Object.keys(cameraPositions[phone]).forEach(view => {
+            folder.add({ [view]: () => switchCamera(phone, view) }, view).name(`${view.charAt(0).toUpperCase() + view.slice(1)} View`);
+        });
 
-    // Samsung Cameras
-    const samsungCameraFolder = gui.addFolder("Samsung S24 Ultra - Camera Views");
-    samsungCameraFolder.add({ main: () => switchCamera("samsung", "main") }, "main").name("Main View");
-    samsungCameraFolder.add({ zoom: () => switchCamera("samsung", "zoom") }, "zoom").name("Zoom View");
-    samsungCameraFolder.add({ top: () => switchCamera("samsung", "top") }, "top").name("Top View");
-    samsungCameraFolder.add({ front: () => switchCamera("samsung", "front") }, "front").name("Front View");
-    samsungCameraFolder.add({ back: () => switchCamera("samsung", "back") }, "back").name("Back View");
-    samsungCameraFolder.open();
+        folder.open();
+    });
 
-    // Flip Phones
+    // ✅ Flip Phones
     const flipFolder = gui.addFolder("Flip Phones");
     models.forEach(({ name, displayName }) => {
-        if (loadedModels[name]) {  // ✅ Ensure model exists before adding
+        if (loadedModels[name]) {
             flipFolder.add({ flip: () => toggleFlip(loadedModels[name]) }, "flip").name(`Flip ${displayName}`);
         }
     });
     flipFolder.open();
 
-    // ✅ Fix: Ensure `isSpinning` Exists Before GUI Access
+    // ✅ Spin Controls
     const spinFolder = gui.addFolder("Enable/Disable Rotation");
     models.forEach(({ name, displayName }) => {
-        if (loadedModels[name] && typeof loadedModels[name].userData.isSpinning !== 'undefined') { // ✅ Check before adding
+        if (loadedModels[name] && typeof loadedModels[name].userData.isSpinning !== 'undefined') {
             spinFolder.add(loadedModels[name].userData, "isSpinning").name(`Spin ${displayName}`);
         }
     });
@@ -246,22 +226,21 @@ function switchCamera(phone, view) {
 
     let targetPosition = cameraPositions[phone][view];
 
-    let startPos = camera.position.clone(); // Current camera position
-    let endPos = targetPosition.position.clone(); // Target camera position
-    let startLookAt = controls.target.clone(); // Current lookAt target
-    let endLookAt = targetPosition.lookAt.clone(); // Target lookAt position
+    let startPos = camera.position.clone();
+    let endPos = targetPosition.position.clone();
+    let startLookAt = controls.target.clone();
+    let endLookAt = targetPosition.lookAt.clone();
 
-    let tween = new TWEEN.Tween({ t: 0 }) // Interpolation control
-        .to({ t: 1 }, 1000) // Transition duration (1 second)
+    let tween = new TWEEN.Tween({ t: 0 })
+        .to({ t: 1 }, 1000)
         .easing(TWEEN.Easing.Quadratic.Out)
         .onUpdate(obj => {
-            // ✅ Interpolate both camera position & lookAt
             camera.position.lerpVectors(startPos, endPos, obj.t);
             controls.target.lerpVectors(startLookAt, endLookAt, obj.t);
             camera.lookAt(controls.target);
         })
         .onComplete(() => {
-            controls.target.copy(endLookAt); // ✅ Ensure final position is accurate
+            controls.target.copy(endLookAt);
             camera.lookAt(controls.target);
             controls.update();
         })
