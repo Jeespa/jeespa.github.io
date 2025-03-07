@@ -21,16 +21,16 @@ const cameraPositions = {
     },
     iPhone: {
         main: { position: new THREE.Vector3(-1, 1.5, 5), lookAt: new THREE.Vector3(0, 1, 0) },
+        front: { position: new THREE.Vector3(0, 1, 4), lookAt: new THREE.Vector3(0, 1, 0) },
         zoom: { position: new THREE.Vector3(0, 1, 3), lookAt: new THREE.Vector3(0, 1, 0) },
         top: { position: new THREE.Vector3(0, 2.5, 0), lookAt: new THREE.Vector3(0, 1, 0) },
-        front: { position: new THREE.Vector3(0, 1, 4), lookAt: new THREE.Vector3(0, 1, 0) },
         back: { position: new THREE.Vector3(0, 1, -4), lookAt: new THREE.Vector3(0, 1, 0) }
     },
     Samsung: {
         main: { position: new THREE.Vector3(2.5, 1.5, 5), lookAt: new THREE.Vector3(1.5, 1, 0) },
+        front: { position: new THREE.Vector3(1.5, 1, 4), lookAt: new THREE.Vector3(1.5, 1, 0) },
         zoom: { position: new THREE.Vector3(1.5, 1, 3), lookAt: new THREE.Vector3(1.5, 1, 0) },
         top: { position: new THREE.Vector3(1.5, 2.5, 0), lookAt: new THREE.Vector3(1.5, 1, 0) },
-        front: { position: new THREE.Vector3(1.5, 1, 4), lookAt: new THREE.Vector3(1.5, 1, 0) },
         back: { position: new THREE.Vector3(1.5, 1, -4), lookAt: new THREE.Vector3(1.5, 1, 0) }
     }
 };
@@ -91,7 +91,7 @@ function init() {
     scene.add(ambientLight);
 
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    directionalLight.position.set(4, 5, 5);
+    directionalLight.position.set(3, 5, 5);
     directionalLight.castShadow = true;
     directionalLight.shadow.mapSize.width = 2048;
     directionalLight.shadow.mapSize.height = 2048;
@@ -120,12 +120,12 @@ function loadProducts() {
             model.position.copy(position);
             model.scale.set(scale, scale, scale);
 
-            // ✅ Attach spinning property to the GROUP instead of just the model
+            // Attach spinning property to the GROUP instead of just the model
             let group = new THREE.Group();
             group.add(model);
             group.position.copy(position);
             group.userData.isFlipped = false;
-            group.userData.isSpinning = false;  // ✅ Fix: Attach spinning to group
+            group.userData.isSpinning = false;  // Fix: Attach spinning to group
 
             model.position.set(0, 0, 0);
 
@@ -150,7 +150,7 @@ function loadProducts() {
             });
 
             scene.add(group);
-            loadedModels[name] = group; // ✅ Store the group, not just the model
+            loadedModels[name] = group; // Store the group, not just the model
 
             loadedCount++;
 
@@ -297,7 +297,7 @@ function animate() {
     requestAnimationFrame(animate);
     TWEEN.update();
 
-    // ✅ Rotate only if spinning is enabled
+    // Rotate only if spinning is enabled
     Object.keys(loadedModels).forEach(name => {
         if (loadedModels[name] && loadedModels[name].userData.isSpinning) {
             loadedModels[name].rotation.y += 0.002; // Slow rotation
