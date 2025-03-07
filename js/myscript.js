@@ -17,25 +17,26 @@ const models = [
 
 // Camera positions
 const cameraPositions = {
-    main: { // General view showing both phones
-        position: new THREE.Vector3(1, 2, 7), // Higher and further back
-        lookAt: new THREE.Vector3(0.75, 1, 0) // Between both phones
+    main: { 
+        position: new THREE.Vector3(1, 2, 7), 
+        lookAt: new THREE.Vector3(0.75, 1, 0) 
     },
     iPhone: {
         main: { position: new THREE.Vector3(-1, 1.5, 5), lookAt: new THREE.Vector3(0, 1, 0) },
         zoom: { position: new THREE.Vector3(0, 1, 3), lookAt: new THREE.Vector3(0, 1, 0) },
-        top: { position: new THREE.Vector3(0, 5, 0), lookAt: new THREE.Vector3(0, 1, 0) },
+        top: { position: new THREE.Vector3(0, 2.5, 0), lookAt: new THREE.Vector3(0, 1, 0) }, // ✅ Moved closer
         front: { position: new THREE.Vector3(0, 1, 4), lookAt: new THREE.Vector3(0, 1, 0) },
         back: { position: new THREE.Vector3(0, 1, -4), lookAt: new THREE.Vector3(0, 1, 0) }
     },
     samsung: {
-        main: { position: new THREE.Vector3(2, 1.5, 5), lookAt: new THREE.Vector3(1.5, 1, 0) },
+        main: { position: new THREE.Vector3(2.5, 1.5, 5), lookAt: new THREE.Vector3(1.5, 1, 0) },
         zoom: { position: new THREE.Vector3(1.5, 1, 3), lookAt: new THREE.Vector3(1.5, 1, 0) },
-        top: { position: new THREE.Vector3(1.5, 5, 0), lookAt: new THREE.Vector3(1.5, 1, 0) },
+        top: { position: new THREE.Vector3(1.5, 2.5, 0), lookAt: new THREE.Vector3(1.5, 1, 0) }, // ✅ Moved closer
         front: { position: new THREE.Vector3(1.5, 1, 4), lookAt: new THREE.Vector3(1.5, 1, 0) },
         back: { position: new THREE.Vector3(1.5, 1, -4), lookAt: new THREE.Vector3(1.5, 1, 0) }
     }
 };
+
 
 
 init();
@@ -80,10 +81,10 @@ function init() {
 
             let cam;
             if (view === "top") {
-                cam = new THREE.OrthographicCamera(-5 * aspect, 5 * aspect, 5, -5, 0.1, 100);
+                cam = new THREE.OrthographicCamera(-2.5 * aspect, 2.5 * aspect, 2.5, -2.5, 0.1, 100); // ✅ Zoom in closer
             } else {
-                cam = new THREE.PerspectiveCamera(50, aspect, 0.1, 100);
-            }
+                cam = new THREE.PerspectiveCamera(40, aspect, 0.1, 100);
+            }            
 
             cam.position.copy(targetPosition.position);
             cam.lookAt(targetPosition.lookAt);
