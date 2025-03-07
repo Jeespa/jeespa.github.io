@@ -128,13 +128,15 @@ function loadProducts() {
     const loader = new GLTFLoader();
     let loadedCount = 0;
 
-    models.forEach(({ name, path, position, scale }) => {
+    models.forEach(({ name, displayName, path, position, scale }) => {
         loader.load(path, (gltf) => {
             const model = gltf.scene;
             model.position.copy(position);
             model.scale.set(scale, scale, scale);
+            
+            // ✅ Ensure isFlipped and isSpinning exist
             model.userData.isFlipped = false;
-            model.userData.isSpinning = false; // Add spinning property
+            model.userData.isSpinning = false;
 
             let group = new THREE.Group();
             group.add(model);
@@ -151,7 +153,6 @@ function loadProducts() {
                 model.rotation.y = Math.PI / 2;
             }
 
-            // Fix pivot point
             let box = new THREE.Box3().setFromObject(model);
             let center = new THREE.Vector3();
             box.getCenter(center);
@@ -165,9 +166,11 @@ function loadProducts() {
             });
 
             scene.add(group);
-            loadedModels[name] = group;
+            loadedModels[name] = group; // ✅ Store the model
 
             loadedCount++;
+
+            // ✅ Call setupGUI only after all models are fully loaded
             if (loadedCount === models.length) {
                 setupGUI();
             }
@@ -219,18 +222,17 @@ function setupGUI() {
     // Flip Phones
     const flipFolder = gui.addFolder("Flip Phones");
     models.forEach(({ name, displayName }) => {
-        if (loadedModels[name]) {  // ✅ Check if model exists before accessing name
+        if (loadedModels[name]) {  // ✅ Ensure model exists before adding
             flipFolder.add({ flip: () => toggleFlip(loadedModels[name]) }, "flip").name(`Flip ${displayName}`);
         }
     });
     flipFolder.open();
 
-    // Spin Controls
+    // ✅ Fix: Ensure `isSpinning` Exists Before GUI Access
     const spinFolder = gui.addFolder("Enable/Disable Rotation");
     models.forEach(({ name, displayName }) => {
-        if (loadedModels[name]) { // ✅ Check before adding to GUI
-            spinFolder.add(loadedModels[name].userData, "isSpinning")
-                .name(`Spin ${displayName}`);
+        if (loadedModels[name] && typeof loadedModels[name].userData.isSpinning !== 'undefined') { // ✅ Check before adding
+            spinFolder.add(loadedModels[name].userData, "isSpinning").name(`Spin ${displayName}`);
         }
     });
     spinFolder.open();
@@ -296,16 +298,15 @@ function animate() {
     requestAnimationFrame(animate);
     TWEEN.update();
 
-    // Rotate only if spinning is enabled
+    // ✅ Rotate only if spinning is enabled
     Object.keys(loadedModels).forEach(name => {
-        if (loadedModels[name].userData.isSpinning) {
+        if (loadedModels[name] && loadedModels[name].userData.isSpinning) {
             loadedModels[name].rotation.y += 0.002; // Slow rotation
         }
     });
 
     renderer.render(scene, camera);
 }
-
 
 function onWindowResize() {
     const aspect = window.innerWidth / window.innerHeight;
