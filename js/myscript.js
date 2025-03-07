@@ -6,12 +6,13 @@ import { GUI } from "../lib/lil-gui.module.min.js";
 
 let scene, camera, renderer, controls;
 let mainCamera, topCamera, zoomCamera;
+let loadedModels = {}; // Store models and their flip state
 const initialColor = { color: "#ff0000" };
 
 // Paths for models
 const models = [
     { path: "../models/iPhone12/iphone_mini.glb", position: new THREE.Vector3(0, 1, 0), scale: 1 },
-    { path: "../models/Samsung/samsung_s24_ultra.glb", position: new THREE.Vector3(1, 0.9, 0), scale: 0.1 }
+    { path: "../models/Samsung/samsung_s24_ultra.glb", position: new THREE.Vector3(1, 0.88, 0), scale: 0.1 }
 ];
 
 // Camera positions
@@ -81,10 +82,11 @@ function loadProducts() {
             const model = gltf.scene;
             model.position.copy(position);
             model.scale.set(scale, scale, scale);
+            model.userData.isFlipped = false; // Track flip state
 
             if (path.includes("Samsung")) {
-                model.rotation.x = Math.PI
-                model.rotation.z = Math.PI
+                model.rotation.x = Math.PI;
+                model.rotation.z = Math.PI;
             }
 
             if (path.includes("iPhone")) {
@@ -101,8 +103,25 @@ function loadProducts() {
             });
 
             scene.add(model);
+            loadedModels[path] = model; // Store the model
         });
     });
+}
+
+// Function to flip a model
+function toggleFlip(model) {
+    if (!model) return;
+
+    let targetRotation = model.userData.isFlipped
+        ? { y: model.rotation.y - Math.PI } // Flip back
+        : { y: model.rotation.y + Math.PI }; // Flip 180 degrees
+
+    new TWEEN.Tween(model.rotation)
+        .to(targetRotation, 500) // Animate over 0.5s
+        .easing(TWEEN.Easing.Quadratic.Out)
+        .start();
+
+    model.userData.isFlipped = !model.userData.isFlipped; // Toggle state
 }
 
 function setupGUI() {
@@ -112,6 +131,13 @@ function setupGUI() {
     cameraFolder.add({ top: () => switchCamera(topCamera) }, "top").name("Top View");
     cameraFolder.add({ zoom: () => switchCamera(zoomCamera) }, "zoom").name("Zoom View");
     cameraFolder.open();
+
+    // Add buttons to flip models
+    const flipFolder = gui.addFolder("Flip Phones");
+    Object.keys(loadedModels).forEach((key) => {
+        flipFolder.add({ flip: () => toggleFlip(loadedModels[key]) }, "flip").name(`Flip ${key}`);
+    });
+    flipFolder.open();
 }
 
 function switchCamera(newCamera) {
