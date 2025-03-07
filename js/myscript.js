@@ -94,18 +94,19 @@ function loadProducts() {
             if (path.includes("Samsung")) {
                 model.rotation.x = Math.PI;
                 model.rotation.z = Math.PI;
-
-                // Shift the model so it rotates from center
-                let box = new THREE.Box3().setFromObject(model);
-                let center = new THREE.Vector3();
-                box.getCenter(center);
-                model.position.sub(center); // Move to origin
             }
 
             if (path.includes("iPhone")) {
-                model.rotation.x = Math.PI;
-                model.rotation.y = Math.PI;
+                model.rotation.x = -Math.PI / 2; // Correct orientation
+                model.rotation.y = 0; // No Y rotation needed
+                model.rotation.z = 0; // No Z rotation needed 
             }
+
+            // Fix pivot if needed
+            let box = new THREE.Box3().setFromObject(model);
+            let center = new THREE.Vector3();
+            box.getCenter(center);
+            model.position.sub(center); // Move to origin
 
             model.traverse((child) => {
                 if (child.isMesh) {
