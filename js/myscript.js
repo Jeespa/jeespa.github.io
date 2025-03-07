@@ -240,18 +240,23 @@ function switchCamera(phone, view) {
 
     let targetPosition = cameraPositions[phone][view];
 
+    let startPos = camera.position.clone(); // Current camera position
+    let endPos = targetPosition.position.clone(); // Target camera position
     let startLookAt = controls.target.clone(); // Current lookAt target
-    let endLookAt = targetPosition.lookAt.clone(); // New lookAt target
+    let endLookAt = targetPosition.lookAt.clone(); // Target lookAt position
 
-    new TWEEN.Tween(camera.position)
-        .to(targetPosition.position, 1000) // ✅ Smooth move to position
+    let tween = new TWEEN.Tween({ t: 0 }) // Interpolation control
+        .to({ t: 1 }, 1000) // Transition duration (1 second)
         .easing(TWEEN.Easing.Quadratic.Out)
-        .onUpdate(() => {
-            controls.target.lerpVectors(startLookAt, endLookAt, 0.1); // ✅ Smoothly change lookAt
-            camera.lookAt(controls.target); // ✅ Ensure the camera follows smoothly
+        .onUpdate(obj => {
+            // ✅ Interpolate both camera position & lookAt
+            camera.position.lerpVectors(startPos, endPos, obj.t);
+            controls.target.lerpVectors(startLookAt, endLookAt, obj.t);
+            camera.lookAt(controls.target);
         })
         .onComplete(() => {
-            controls.target.copy(endLookAt); // ✅ Set final lookAt target
+            controls.target.copy(endLookAt); // ✅ Ensure final position is accurate
+            camera.lookAt(controls.target);
             controls.update();
         })
         .start();
