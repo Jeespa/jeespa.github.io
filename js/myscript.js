@@ -28,10 +28,22 @@ const models = [
 
 // Camera positions
 const cameraPositions = {
-    main: { position: new THREE.Vector3(1.5, 1, 6), lookAt: new THREE.Vector3(0, 1, 0) },
-    zoom: { position: new THREE.Vector3(1, 0.5, 3), lookAt: new THREE.Vector3(0, 1, 0) },
-    top: { position: new THREE.Vector3(0, 5, 0), lookAt: new THREE.Vector3(0, 0, 0) }
+    iPhone: {
+        main: { position: new THREE.Vector3(0, 1, 6), lookAt: new THREE.Vector3(0, 1, 0) },
+        zoom: { position: new THREE.Vector3(0, 1, 3), lookAt: new THREE.Vector3(0, 1, 0) },
+        top: { position: new THREE.Vector3(0, 5, 0), lookAt: new THREE.Vector3(0, 1, 0) },
+        front: { position: new THREE.Vector3(0, 1, 4), lookAt: new THREE.Vector3(0, 1, 0) },
+        back: { position: new THREE.Vector3(0, 1, -4), lookAt: new THREE.Vector3(0, 1, 0) }
+    },
+    samsung: {
+        main: { position: new THREE.Vector3(1.5, 1, 6), lookAt: new THREE.Vector3(1.5, 1, 0) },
+        zoom: { position: new THREE.Vector3(1.5, 1, 3), lookAt: new THREE.Vector3(1.5, 1, 0) },
+        top: { position: new THREE.Vector3(1.5, 5, 0), lookAt: new THREE.Vector3(1.5, 1, 0) },
+        front: { position: new THREE.Vector3(1.5, 1, 4), lookAt: new THREE.Vector3(1.5, 1, 0) },
+        back: { position: new THREE.Vector3(1.5, 1, -4), lookAt: new THREE.Vector3(1.5, 1, 0) }
+    }
 };
+
 
 init();
 loadSkybox();
@@ -153,11 +165,24 @@ function toggleFlip(model) {
 
 function setupGUI() {
     const gui = new GUI();
-    const cameraFolder = gui.addFolder("Camera Views");
-    cameraFolder.add({ main: () => switchCamera(mainCamera) }, "main").name("Main View");
-    cameraFolder.add({ top: () => switchCamera(topCamera) }, "top").name("Top View");
-    cameraFolder.add({ zoom: () => switchCamera(zoomCamera) }, "zoom").name("Zoom View");
-    cameraFolder.open();
+
+    // iPhone Cameras
+    const iphoneCameraFolder = gui.addFolder("iPhone 16 Pro Max - Camera Views");
+    iphoneCameraFolder.add({ main: () => switchCamera("iPhone", "main") }, "main").name("Main View");
+    iphoneCameraFolder.add({ zoom: () => switchCamera("iPhone", "zoom") }, "zoom").name("Zoom View");
+    iphoneCameraFolder.add({ top: () => switchCamera("iPhone", "top") }, "top").name("Top View");
+    iphoneCameraFolder.add({ front: () => switchCamera("iPhone", "front") }, "front").name("Front View");
+    iphoneCameraFolder.add({ back: () => switchCamera("iPhone", "back") }, "back").name("Back View");
+    iphoneCameraFolder.open();
+
+    // Samsung Cameras
+    const samsungCameraFolder = gui.addFolder("Samsung S24 Ultra - Camera Views");
+    samsungCameraFolder.add({ main: () => switchCamera("samsung", "main") }, "main").name("Main View");
+    samsungCameraFolder.add({ zoom: () => switchCamera("samsung", "zoom") }, "zoom").name("Zoom View");
+    samsungCameraFolder.add({ top: () => switchCamera("samsung", "top") }, "top").name("Top View");
+    samsungCameraFolder.add({ front: () => switchCamera("samsung", "front") }, "front").name("Front View");
+    samsungCameraFolder.add({ back: () => switchCamera("samsung", "back") }, "back").name("Back View");
+    samsungCameraFolder.open();
 
     // Add buttons to flip models
     const flipFolder = gui.addFolder("Flip Phones");
@@ -168,33 +193,20 @@ function setupGUI() {
 }
 
 
-function switchCamera(newCamera) {
-    if (newCamera === mainCamera) {
-        mainCamera.position.copy(cameraPositions.main.position);
-        mainCamera.lookAt(cameraPositions.main.lookAt);
-        controls.target.copy(cameraPositions.main.lookAt);
-    } else if (newCamera === zoomCamera) {
-        zoomCamera.position.copy(cameraPositions.zoom.position);
-        zoomCamera.lookAt(cameraPositions.zoom.lookAt);
-        controls.target.copy(cameraPositions.zoom.lookAt);
-    } else if (newCamera === topCamera) {
-        topCamera.position.copy(cameraPositions.top.position);
-        topCamera.lookAt(cameraPositions.top.lookAt);
-        controls.target.copy(cameraPositions.top.lookAt);
-        topCamera.up.set(0, 0, -1);
 
-        const aspect = window.innerWidth / window.innerHeight;
-        topCamera.left = -5 * aspect;
-        topCamera.right = 5 * aspect;
-        topCamera.top = 5;
-        topCamera.bottom = -5;
-        topCamera.updateProjectionMatrix();
-    }
+function switchCamera(phone, view) {
+    const targetPosition = cameraPositions[phone][view];
 
-    camera = newCamera;
+    if (!targetPosition) return;
+
+    camera.position.copy(targetPosition.position);
+    camera.lookAt(targetPosition.lookAt);
+    controls.target.copy(targetPosition.lookAt);
+    
     controls.object = camera;
     controls.update();
 }
+
 
 function loadSkybox() {
     const textureLoader = new THREE.TextureLoader();
