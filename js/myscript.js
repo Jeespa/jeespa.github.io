@@ -145,7 +145,7 @@ function loadProducts() {
             console.log(`Model Loaded: ${name}`);
 
             model.traverse((child) => {
-                console.log(`Child name: ${child.name}, Type: ${child.type}`);
+                //console.log(`Child name: ${child.name}, Type: ${child.type}`);
 
                 // Apply video texture to the iPhone screen
                 if (name === "iPhone" && child.name === "Cube014_screen001_0") {
