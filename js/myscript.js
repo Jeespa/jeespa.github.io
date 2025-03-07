@@ -84,7 +84,7 @@ function loadProducts() {
 
             if (path.includes("Samsung")) {
                 model.rotation.x = Math.PI
-                model.rotation.y = Math.PI / 2;
+                model.rotation.z = Math.PI / 2;
             }
 
             if (path.includes("iPhone")) {
