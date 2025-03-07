@@ -11,13 +11,13 @@ const initialColor = { color: "#ff0000" };
 // Paths for models
 const models = [
     { path: "../models/iPhone12/iphone_mini.glb", position: new THREE.Vector3(0, 1, 0), scale: 1 },
-    { path: "../models/Samsung/samsung_s24_ultra.glb", position: new THREE.Vector3(1, 1, 0), scale: 0.1 }
+    { path: "../models/Samsung/samsung_s24_ultra.glb", position: new THREE.Vector3(1, 0.9, 0), scale: 0.1 }
 ];
 
 // Camera positions
 const cameraPositions = {
     main: { position: new THREE.Vector3(1.5, 1, 6), lookAt: new THREE.Vector3(0, 1, 0) },
-    zoom: { position: new THREE.Vector3(5, 5, 5), lookAt: new THREE.Vector3(0, 1, 0) },
+    zoom: { position: new THREE.Vector3(1, 0.5, 3), lookAt: new THREE.Vector3(0, 1, 0) },
     top: { position: new THREE.Vector3(0, 5, 0), lookAt: new THREE.Vector3(0, 0, 0) }
 };
 
@@ -84,7 +84,7 @@ function loadProducts() {
 
             if (path.includes("Samsung")) {
                 model.rotation.x = Math.PI
-                model.rotation.z = Math.PI;
+                model.rotation.z = Math.PI
             }
 
             if (path.includes("iPhone")) {
