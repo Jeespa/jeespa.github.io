@@ -17,7 +17,7 @@ const models = [
 // Camera positions
 const cameraPositions = {
     main: { position: new THREE.Vector3(1.5, 1, 6), lookAt: new THREE.Vector3(0, 1, 0) },
-    zoom: { position: new THREE.Vector3(1, 0.5, 3), lookAt: new THREE.Vector3(0, 1, 0) },
+    zoom: { position: new THREE.Vector3(5, 5, 5), lookAt: new THREE.Vector3(0, 1, 0) },
     top: { position: new THREE.Vector3(0, 5, 0), lookAt: new THREE.Vector3(0, 0, 0) }
 };
 
@@ -84,7 +84,7 @@ function loadProducts() {
 
             if (path.includes("Samsung")) {
                 model.rotation.x = Math.PI
-                model.rotation.z = Math.PI / 2;
+                model.rotation.z = Math.PI;
             }
 
             if (path.includes("iPhone")) {
