@@ -98,11 +98,24 @@ function init() {
     scene.add(directionalLight);
 
     // Floor
+    // Calculate the midpoint between iPhone and Samsung positions
+    const phone1 = models[0].position; // iPhone position
+    const phone2 = models[1].position; // Samsung position
+
+    const centerX = (phone1.x + phone2.x) / 2;
+    const centerZ = (phone1.z + phone2.z) / 2;
+
+    // Calculate dynamic floor size based on phone distance
+    const floorWidth = Math.abs(phone2.x - phone1.x) + 5; // Add extra padding
+    const floorDepth = 15; // Keep depth constant
+
+    // Create and position the floor
     const floor = new THREE.Mesh(
-        new THREE.PlaneGeometry(15, 15),
+        new THREE.PlaneGeometry(floorWidth, floorDepth),
         new THREE.MeshStandardMaterial({ color: 0xcccccc })
     );
     floor.rotation.x = -Math.PI / 2;
+    floor.position.set(centerX, 0, centerZ); // Centered between the phones
     floor.receiveShadow = true;
     scene.add(floor);
 
