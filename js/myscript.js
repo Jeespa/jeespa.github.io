@@ -105,19 +105,20 @@ function init() {
     const centerX = (phone1.x + phone2.x) / 2;
     const centerZ = (phone1.z + phone2.z) / 2;
 
-    // Calculate dynamic floor size based on phone distance
-    const floorWidth = Math.abs(phone2.x - phone1.x) + 5; // Add extra padding
-    const floorDepth = 15; // Keep depth constant
+    // Determine the largest distance (to ensure a square shape)
+    const phoneDistance = Math.abs(phone2.x - phone1.x);
+    const floorSize = Math.max(phoneDistance + 5, 15); // Ensure it's at least 15x15
 
-    // Create and position the floor
+    // Create and position the floor (Square)
     const floor = new THREE.Mesh(
-        new THREE.PlaneGeometry(floorWidth, floorDepth),
+        new THREE.PlaneGeometry(floorSize, floorSize), // Square shape
         new THREE.MeshStandardMaterial({ color: 0xcccccc })
     );
     floor.rotation.x = -Math.PI / 2;
     floor.position.set(centerX, 0, centerZ); // Centered between the phones
     floor.receiveShadow = true;
     scene.add(floor);
+
 
     window.addEventListener("resize", onWindowResize);
 }
