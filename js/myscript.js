@@ -103,7 +103,7 @@ function loadProducts() {
             }
 
             if (path.includes("iPhone")) {
-                model.rotation.x = -Math.PI / 2;
+                model.rotation.x = Math.PI;
                 model.rotation.y = Math.PI;
             }
 
