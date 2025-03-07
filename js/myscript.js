@@ -141,7 +141,7 @@ function loadProducts() {
 
     // Create video element and texture
     const video = document.createElement("video");
-    video.src = "../videos/pixar.mp4"; // Adjust path if needed
+    video.src = "../videos/Pixar.mp4"; // Adjust path if needed
     video.loop = true;
     video.muted = true;  
     video.play();
