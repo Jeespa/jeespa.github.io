@@ -139,37 +139,66 @@ function loadProducts() {
     const loader = new GLTFLoader();
     let loadedCount = 0;
 
+    // Create video element and texture
+    const video = document.createElement("video");
+    video.src = "../videos/pixar.mp4"; // Adjust path if needed
+    video.loop = true;
+    video.muted = true;  
+    video.play();
+
+    const videoTexture = new THREE.VideoTexture(video);
+    videoTexture.minFilter = THREE.LinearFilter;
+    videoTexture.magFilter = THREE.LinearFilter;
+    videoTexture.format = THREE.RGBAFormat;
+
     models.forEach(({ name, path, position, scale }) => {
         loader.load(path, (gltf) => {
             const model = gltf.scene;
-            console.log(`Model Loaded: ${name}`);
+            model.position.copy(position);
+            model.scale.set(scale, scale, scale);
 
+            // Create a parent group to manage position & rotation
+            let group = new THREE.Group();
+            group.add(model);
+            group.position.copy(position);
+            group.userData.isFlipped = false;
+            group.userData.isSpinning = false;
+
+            model.position.set(0, 0, 0); // Ensure model is centered in the group
+
+            // Adjust rotations per phone model
+            if (name.toLowerCase() === "samsung") {
+                model.rotation.x = Math.PI;
+                model.rotation.z = Math.PI;
+            }
+            if (name.toLowerCase() === "iphone") {
+                model.rotation.y = Math.PI / 2;
+            }
+
+            // Fix pivot point
+            let box = new THREE.Box3().setFromObject(model);
+            let center = new THREE.Vector3();
+            box.getCenter(center);
+            model.position.sub(center);
+
+            // Apply shadows
             model.traverse((child) => {
-                //console.log(`Child name: ${child.name}, Type: ${child.type}`);
-
-                // Apply video texture to the iPhone screen
-                if (name === "iPhone" && child.name === "Cube014_screen001_0") {
-                    console.log("Applying video to iPhone screen...");
-                    if (child.material) {
+                if (child.isMesh) {
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                    
+                    // Apply video texture to the correct screen mesh
+                    if (name === "iPhone" && child.name === "Cube014_screen001_0") {
+                        console.log("Applying video to iPhone screen...");
                         child.material = new THREE.MeshBasicMaterial({ map: videoTexture });
                     }
-                }
 
-                // Apply video texture to the Samsung screen (try Object_5 or Object_6)
-                if (name === "Samsung" && (child.name === "Object_5" || child.name === "Object_6")) {
-                    console.log("Applying video to Samsung screen...");
-                    if (child.material) {
+                    if (name === "Samsung" && (child.name === "Object_5" || child.name === "Object_6")) {  
+                        console.log("Applying video to Samsung screen...");
                         child.material = new THREE.MeshBasicMaterial({ map: videoTexture });
                     }
                 }
             });
-
-            model.position.copy(position);
-            model.scale.set(scale, scale, scale);
-
-            let group = new THREE.Group();
-            group.add(model);
-            group.position.copy(position);
 
             scene.add(group);
             loadedModels[name] = group;
