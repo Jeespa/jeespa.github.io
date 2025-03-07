@@ -51,6 +51,7 @@ function init() {
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Better shadow quality
     document.body.appendChild(renderer.domElement);
 
     const aspect = window.innerWidth / window.innerHeight;
@@ -107,8 +108,10 @@ function init() {
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
     directionalLight.position.set(4, 5, 5);
     directionalLight.castShadow = true;
+    directionalLight.shadow.mapSize.width = 2048;
+    directionalLight.shadow.mapSize.height = 2048;
     scene.add(directionalLight);
-
+    
     // Floor
     const floor = new THREE.Mesh(
         new THREE.PlaneGeometry(50, 50),
@@ -224,34 +227,24 @@ function setupGUI() {
 }
 
 function switchCamera(phone, view) {
-    let targetPosition;
-
-    if (phone === "main") {
-        targetPosition = cameraPositions.main;
-        camera = cameras.main;
-    } else {
-        if (!cameraPositions[phone] || !cameraPositions[phone][view]) {
-            console.error(`Error: Camera position not found for ${phone} - ${view}`);
-            return;
-        }
-
-        targetPosition = cameraPositions[phone][view];
-        camera = cameras[phone][view];
+    if (!cameraPositions[phone] || !cameraPositions[phone][view]) {
+        console.error(`Error: Camera position not found for ${phone} - ${view}`);
+        return;
     }
 
-    if (!targetPosition) return;
+    let targetPosition = cameraPositions[phone][view];
 
-    // ✅ Correct aspect ratio
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
+    new TWEEN.Tween(camera.position)
+        .to(targetPosition.position, 1000) // Transition over 1 second
+        .easing(TWEEN.Easing.Quadratic.Out)
+        .start();
 
-    camera.position.copy(targetPosition.position);
-    camera.lookAt(targetPosition.lookAt);
-    controls.target.copy(targetPosition.lookAt);
-
-    controls.object = camera;
-    controls.update();
+    new TWEEN.Tween(controls.target)
+        .to(targetPosition.lookAt, 1000)
+        .easing(TWEEN.Easing.Quadratic.Out)
+        .start();
 }
+
 
 function loadSkybox() {
     const textureLoader = new THREE.TextureLoader();
