@@ -96,11 +96,11 @@ function loadProducts() {
                 model.rotation.z = Math.PI;
             }
 
-            if (path.includes("iPhone")) {
-                model.rotation.x = -Math.PI / 2; // Correct orientation
+            /* if (path.includes("iPhone")) {
+                model.rotation.x = Math.PI; // Correct orientation
                 model.rotation.y = 0; // No Y rotation needed
                 model.rotation.z = 0; // No Z rotation needed 
-            }
+            } */
 
             // Fix pivot if needed
             let box = new THREE.Box3().setFromObject(model);
@@ -139,7 +139,7 @@ function toggleFlip(model, modelName) {
     
     if (modelName.includes("iPhone")) {
         // Flip iPhone around X-axis (since it's already rotated -90°)
-        targetRotation.x = model.userData.isFlipped ? model.rotation.x - Math.PI : model.rotation.x + Math.PI;
+        targetRotation.z = model.userData.isFlipped ? model.rotation.z - Math.PI : model.rotation.z + Math.PI;
     }
 
     new TWEEN.Tween(model.rotation)
