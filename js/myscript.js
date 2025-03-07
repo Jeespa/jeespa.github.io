@@ -96,11 +96,9 @@ function loadProducts() {
                 model.rotation.z = Math.PI;
             }
 
-            /* if (path.includes("iPhone")) {
-                model.rotation.x = Math.PI; // Correct orientation
-                model.rotation.y = 0; // No Y rotation needed
-                model.rotation.z = 0; // No Z rotation needed 
-            } */
+            if (path.includes("iPhone")) {
+                model.rotation.z = Math.PI;
+            }
 
             // Fix pivot if needed
             let box = new THREE.Box3().setFromObject(model);
@@ -127,20 +125,12 @@ function loadProducts() {
     });
 }
 
-function toggleFlip(model, modelName) {
+function toggleFlip(model) {
     if (!model) return;
 
     let targetRotation = {};
 
-    if (modelName.includes("Samsung")) {
-        // Flip Samsung around Y-axis
-        targetRotation.y = model.userData.isFlipped ? model.rotation.y - Math.PI : model.rotation.y + Math.PI;
-    } 
-    
-    if (modelName.includes("iPhone")) {
-        // Flip iPhone around X-axis (since it's already rotated -90°)
-        targetRotation.z = model.userData.isFlipped ? model.rotation.z - Math.PI : model.rotation.z + Math.PI;
-    }
+    targetRotation.y = model.userData.isFlipped ? model.rotation.y - Math.PI : model.rotation.y + Math.PI;
 
     new TWEEN.Tween(model.rotation)
         .to(targetRotation, 500) // Animate over 0.5s
@@ -161,7 +151,7 @@ function setupGUI() {
     // Add buttons to flip models
     const flipFolder = gui.addFolder("Flip Phones");
     Object.keys(loadedModels).forEach((key) => {
-        flipFolder.add({ flip: () => toggleFlip(loadedModels[key], key) }, "flip").name(`Flip ${key}`);
+        flipFolder.add({ flip: () => toggleFlip(loadedModels[key]) }, "flip").name(`Flip ${key}`);
     });
     flipFolder.open();
 }
