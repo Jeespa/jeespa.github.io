@@ -54,34 +54,50 @@ function init() {
 
     const aspect = window.innerWidth / window.innerHeight;
 
-    cameras = {};
-    
+    cameras = {}; // Initialize cameras object
+
+    // Ensure cameraPositions has main view
+    if (!cameraPositions.main) {
+        console.error("Error: cameraPositions.main is missing!");
+        return;
+    }
+
     // Initialize cameras dynamically for each phone
     Object.keys(cameraPositions).forEach(phone => {
-        cameras[phone] = {}; // Create sub-object for the phone cameras
+        if (!cameras[phone]) cameras[phone] = {}; // ✅ Ensure cameras[phone] exists
 
         Object.keys(cameraPositions[phone]).forEach(view => {
+            let targetPosition = cameraPositions[phone][view];
+
+            if (!targetPosition) {
+                console.error(`Error: Missing camera position for ${phone} - ${view}`);
+                return;
+            }
+
             let cam;
             if (view === "top") {
-                // Orthographic camera for top-down views
                 cam = new THREE.OrthographicCamera(-5 * aspect, 5 * aspect, 5, -5, 0.1, 100);
             } else {
-                // Perspective camera for normal views
                 cam = new THREE.PerspectiveCamera(50, aspect, 0.1, 100);
             }
 
-            cam.position.copy(cameraPositions[phone][view].position);
-            cam.lookAt(cameraPositions[phone][view].lookAt);
-            cameras[phone][view] = cam; // Store in cameras object
+            cam.position.copy(targetPosition.position);
+            cam.lookAt(targetPosition.lookAt);
+            cameras[phone][view] = cam; // ✅ Store the camera correctly
         });
     });
 
-    // Set default camera (iPhone main view)
-    camera = cameras.iPhone.main;
-    
+    // ✅ Initialize general main camera (for both phones)
+    cameras.main = new THREE.PerspectiveCamera(50, aspect, 0.1, 100);
+    cameras.main.position.copy(cameraPositions.main.position);
+    cameras.main.lookAt(cameraPositions.main.lookAt);
+
+    // ✅ Set the default camera to the general main view
+    camera = cameras.main;
+
     // Initialize orbit controls with default camera
     controls = new OrbitControls(camera, renderer.domElement);
-    controls.target.set(0, 1, 0);
+    controls.target.set(0.75, 1, 0);
     controls.update();
 
     // Lights
