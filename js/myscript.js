@@ -85,7 +85,7 @@ function loadProducts() {
             model.scale.set(scale, scale, scale);
             model.userData.isFlipped = false;
 
-            if (path.includes("Samsung")) {
+           /*  if (path.includes("Samsung")) {
                 model.rotation.x = Math.PI;
                 model.rotation.z = Math.PI;
             }
@@ -93,7 +93,7 @@ function loadProducts() {
             if (path.includes("iPhone")) {
                 model.rotation.x = -Math.PI / 2;
                 model.rotation.y = Math.PI;
-            }
+            } */
 
             model.traverse((child) => {
                 if (child.isMesh) {
