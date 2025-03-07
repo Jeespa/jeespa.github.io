@@ -35,6 +35,17 @@ const cameraPositions = {
     }
 };
 
+const video = document.createElement("video");
+video.src = "../videos/pixar.mp4"; // Path to your video
+video.loop = true;
+video.muted = true;  // Mute to allow autoplay
+video.play();
+
+const videoTexture = new THREE.VideoTexture(video);
+videoTexture.minFilter = THREE.LinearFilter;
+videoTexture.magFilter = THREE.LinearFilter;
+videoTexture.format = THREE.RGBAFormat;
+
 init();
 loadSkybox();
 loadProducts();
@@ -132,15 +143,30 @@ function loadProducts() {
         loader.load(path, (gltf) => {
             const model = gltf.scene;
             console.log(`Model Loaded: ${name}`);
-            console.log(model); // Logs the entire model structure
 
             model.traverse((child) => {
                 console.log(`Child name: ${child.name}, Type: ${child.type}`);
+
+                // Apply video texture to the iPhone screen
+                if (name === "iPhone" && child.name === "Cube014_screen001_0") {
+                    console.log("Applying video to iPhone screen...");
+                    if (child.material) {
+                        child.material = new THREE.MeshBasicMaterial({ map: videoTexture });
+                    }
+                }
+
+                // Apply video texture to the Samsung screen (try Object_5 or Object_6)
+                if (name === "Samsung" && (child.name === "Object_5" || child.name === "Object_6")) {
+                    console.log("Applying video to Samsung screen...");
+                    if (child.material) {
+                        child.material = new THREE.MeshBasicMaterial({ map: videoTexture });
+                    }
+                }
             });
 
             model.position.copy(position);
             model.scale.set(scale, scale, scale);
-            
+
             let group = new THREE.Group();
             group.add(model);
             group.position.copy(position);
