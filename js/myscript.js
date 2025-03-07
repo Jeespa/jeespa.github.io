@@ -7,13 +7,24 @@ import { GUI } from "../lib/lil-gui.module.min.js";
 let scene, camera, renderer, controls;
 let mainCamera, topCamera, zoomCamera;
 let loadedModels = {}; // Store models and their flip state
-const initialColor = { color: "#000000" };
+//const initialColor = { color: "#000000" };
 
 // Paths for models
 const models = [
-    { path: "../models/iPhone16/iphone_16_pro_max.glb", position: new THREE.Vector3(0, 1, 0), scale: 1 },
-    { path: "../models/Samsung/samsung_s24_ultra.glb", position: new THREE.Vector3(1.5, 1.01, 0), scale: 0.39 }
+    { 
+        name: "iPhone 16 Pro Max", 
+        path: "../models/iPhone16/iphone_16_pro_max.glb", 
+        position: new THREE.Vector3(0, 1, 0), 
+        scale: 1 
+    },
+    { 
+        name: "Samsung S24 Ultra", 
+        path: "../models/Samsung/samsung_s24_ultra.glb", 
+        position: new THREE.Vector3(1.5, 1.01, 0), 
+        scale: 0.39
+    }
 ];
+
 
 // Camera positions
 const cameraPositions = {
@@ -78,7 +89,7 @@ function loadProducts() {
     const loader = new GLTFLoader();
     let loadedCount = 0; // Track loaded models count
 
-    models.forEach(({ path, position, scale }) => {
+    models.forEach(({ name, path, position, scale }) => {
         loader.load(path, (gltf) => {
             const model = gltf.scene;
             model.position.copy(position);
@@ -110,12 +121,12 @@ function loadProducts() {
                 if (child.isMesh) {
                     child.castShadow = true;
                     child.receiveShadow = true;
-                    child.material.color.set(initialColor.color);
+                    //child.material.color.set(initialColor.color);
                 }
             });
 
             scene.add(group);
-            loadedModels[path] = group; // Store the model
+            loadedModels[name] = group; // Store the model
 
             loadedCount++;
             if (loadedCount === models.length) {
