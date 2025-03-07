@@ -188,7 +188,7 @@ function loadProducts() {
                     child.receiveShadow = true;
                     
                     // Apply video texture to the correct screen mesh
-                    if (name === "iPhone" && child.name === "Cube014_screen001_0") {
+                   /*  if (name === "iPhone" && child.name === "Cube014_screen001_0") {
                         console.log("Applying video to iPhone screen...");
                     
                         child.material = new THREE.MeshBasicMaterial({
@@ -197,10 +197,10 @@ function loadProducts() {
                         });
                     
                         // 🔄 Flip the texture to display correctly
-                        child.geometry.scale(-1, -1, 1); // Mirror along X-axis
+                        //child.geometry.scale(-1, -1, 1); // Mirror along X-axis
                         //child.material.map.repeat.set(-1, 1); // Flips it horizontally
                         //child.material.map.offset.set(1, 0);  // Adjusts position
-                    }                    
+                    }    */                 
 
                     if (name === "Samsung" && (child.name === "Object_9")) {  
                         console.log("Applying video to Samsung screen...");
