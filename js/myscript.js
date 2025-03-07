@@ -11,8 +11,8 @@ const initialColor = { color: "#ff0000" };
 
 // Paths for models
 const models = [
-    { path: "../models/iPhone16/iphone_16_black.glb", position: new THREE.Vector3(0, 1, 0), scale: 1 },
-    { path: "../models/Samsung/samsung_s24_ultra.glb", position: new THREE.Vector3(1, 0.86, 0), scale: 0.1 }
+    { path: "../models/iPhone16/iphone_16_pro_max.glb", position: new THREE.Vector3(0, 1, 0), scale: 1 },
+    { path: "../models/Samsung/samsung_s24_ultra.glb", position: new THREE.Vector3(1, 0.86, 0), scale: 0.09 }
 ];
 
 // Camera positions
