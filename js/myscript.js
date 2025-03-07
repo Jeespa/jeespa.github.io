@@ -91,7 +91,7 @@ function init() {
     scene.add(ambientLight);
 
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    directionalLight.position.set(3, 5, 5);
+    directionalLight.position.set(3.5, 5, 5);
     directionalLight.castShadow = true;
     directionalLight.shadow.mapSize.width = 2048;
     directionalLight.shadow.mapSize.height = 2048;
@@ -99,7 +99,7 @@ function init() {
 
     // Floor
     const floor = new THREE.Mesh(
-        new THREE.PlaneGeometry(50, 50),
+        new THREE.PlaneGeometry(5, 5),
         new THREE.MeshStandardMaterial({ color: 0xcccccc })
     );
     floor.rotation.x = -Math.PI / 2;
