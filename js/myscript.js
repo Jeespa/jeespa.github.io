@@ -53,18 +53,22 @@ function init() {
     document.body.appendChild(renderer.domElement);
 
     const aspect = window.innerWidth / window.innerHeight;
-
     cameras = {}; // Initialize cameras object
 
-    // Ensure cameraPositions has main view
-    if (!cameraPositions.main) {
+    // ✅ Create General Main Camera
+    if (cameraPositions.main) {
+        cameras.main = new THREE.PerspectiveCamera(50, aspect, 0.1, 100);
+        cameras.main.position.copy(cameraPositions.main.position);
+        cameras.main.lookAt(cameraPositions.main.lookAt);
+    } else {
         console.error("Error: cameraPositions.main is missing!");
-        return;
     }
 
-    // Initialize cameras dynamically for each phone
+    // ✅ Create Cameras for Each Phone
     Object.keys(cameraPositions).forEach(phone => {
-        if (!cameras[phone]) cameras[phone] = {}; // ✅ Ensure cameras[phone] exists
+        if (phone === "main") return; // Already initialized the general camera
+
+        cameras[phone] = {}; // ✅ Ensure cameras[phone] exists
 
         Object.keys(cameraPositions[phone]).forEach(view => {
             let targetPosition = cameraPositions[phone][view];
@@ -87,15 +91,10 @@ function init() {
         });
     });
 
-    // ✅ Initialize general main camera (for both phones)
-    cameras.main = new THREE.PerspectiveCamera(50, aspect, 0.1, 100);
-    cameras.main.position.copy(cameraPositions.main.position);
-    cameras.main.lookAt(cameraPositions.main.lookAt);
-
     // ✅ Set the default camera to the general main view
-    camera = cameras.main;
+    camera = cameras.main || Object.values(cameras)[0]; // Fallback to any available camera
 
-    // Initialize orbit controls with default camera
+    // Initialize orbit controls
     controls = new OrbitControls(camera, renderer.domElement);
     controls.target.set(0.75, 1, 0);
     controls.update();
@@ -123,7 +122,7 @@ function init() {
 
 function loadProducts() {
     const loader = new GLTFLoader();
-    let loadedCount = 0; // Track loaded models count
+    let loadedCount = 0;
 
     models.forEach(({ name, path, position, scale }) => {
         loader.load(path, (gltf) => {
@@ -132,41 +131,41 @@ function loadProducts() {
             model.scale.set(scale, scale, scale);
             model.userData.isFlipped = false;
 
-            let group = new THREE.Group(); // Create a new group as the pivot
+            let group = new THREE.Group();
             group.add(model);
 
-            model.position.set(0, 0, 0); // Reset model position inside group
-            group.position.copy(position); // Position the group
+            model.position.set(0, 0, 0);
+            group.position.copy(position);
 
-            if (path.includes("Samsung")) {
+            // ✅ Correct rotation logic
+            if (name === "samsung") {
                 model.rotation.x = Math.PI;
                 model.rotation.z = Math.PI;
             }
 
-            if (path.includes("iPhone")) {
+            if (name === "iPhone") {
                 model.rotation.y = Math.PI / 2;
             }
 
-            // Fix pivot point
+            // ✅ Fix pivot point
             let box = new THREE.Box3().setFromObject(model);
             let center = new THREE.Vector3();
             box.getCenter(center);
-            model.position.sub(center); // Move to origin
+            model.position.sub(center);
 
             model.traverse((child) => {
                 if (child.isMesh) {
                     child.castShadow = true;
                     child.receiveShadow = true;
-                    //child.material.color.set(initialColor.color);
                 }
             });
 
             scene.add(group);
-            loadedModels[name] = group; // Store the model
+            loadedModels[name] = group;
 
             loadedCount++;
             if (loadedCount === models.length) {
-                setupGUI(); // Call GUI setup only after all models are loaded
+                setupGUI();
             }
         });
     });
@@ -224,19 +223,30 @@ function setupGUI() {
 }
 
 function switchCamera(phone, view) {
-    let targetPosition;
-
     if (phone === "main") {
-        targetPosition = cameraPositions.main; // Use the general main camera
+        if (!cameraPositions.main) {
+            console.error(`Error: cameraPositions.main is missing`);
+            return;
+        }
+        camera.position.copy(cameraPositions.main.position);
+        camera.lookAt(cameraPositions.main.lookAt);
+        controls.target.copy(cameraPositions.main.lookAt);
     } else {
-        targetPosition = cameraPositions[phone][view];
+        if (!cameraPositions[phone]) {
+            console.error(`Error: cameraPositions[${phone}] does not exist`);
+            return;
+        }
+
+        if (!cameraPositions[phone][view]) {
+            console.error(`Error: cameraPositions[${phone}][${view}] does not exist`);
+            return;
+        }
+
+        let targetPosition = cameraPositions[phone][view];
+        camera.position.copy(targetPosition.position);
+        camera.lookAt(targetPosition.lookAt);
+        controls.target.copy(targetPosition.lookAt);
     }
-
-    if (!targetPosition) return;
-
-    camera.position.copy(targetPosition.position);
-    camera.lookAt(targetPosition.lookAt);
-    controls.target.copy(targetPosition.lookAt);
 
     controls.object = camera;
     controls.update();
@@ -277,10 +287,14 @@ function animate() {
 function onWindowResize() {
     const aspect = window.innerWidth / window.innerHeight;
 
-    // Update all cameras dynamically
     Object.keys(cameras).forEach(phone => {
         Object.keys(cameras[phone]).forEach(view => {
             let cam = cameras[phone][view];
+
+            if (!cam) {
+                console.warn(`Warning: Missing camera for ${phone} - ${view}`);
+                return;
+            }
 
             if (cam.isPerspectiveCamera) {
                 cam.aspect = aspect;
@@ -295,6 +309,5 @@ function onWindowResize() {
         });
     });
 
-    // Resize renderer
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
