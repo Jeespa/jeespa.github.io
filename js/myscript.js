@@ -223,30 +223,30 @@ function setupGUI() {
 }
 
 function switchCamera(phone, view) {
+    let targetPosition;
+
     if (phone === "main") {
-        if (!cameraPositions.main) {
-            console.error(`Error: cameraPositions.main is missing`);
-            return;
-        }
-        camera.position.copy(cameraPositions.main.position);
-        camera.lookAt(cameraPositions.main.lookAt);
-        controls.target.copy(cameraPositions.main.lookAt);
+        targetPosition = cameraPositions.main;
+        camera = cameras.main;
     } else {
-        if (!cameraPositions[phone]) {
-            console.error(`Error: cameraPositions[${phone}] does not exist`);
+        if (!cameraPositions[phone] || !cameraPositions[phone][view]) {
+            console.error(`Error: Camera position not found for ${phone} - ${view}`);
             return;
         }
 
-        if (!cameraPositions[phone][view]) {
-            console.error(`Error: cameraPositions[${phone}][${view}] does not exist`);
-            return;
-        }
-
-        let targetPosition = cameraPositions[phone][view];
-        camera.position.copy(targetPosition.position);
-        camera.lookAt(targetPosition.lookAt);
-        controls.target.copy(targetPosition.lookAt);
+        targetPosition = cameraPositions[phone][view];
+        camera = cameras[phone][view];
     }
+
+    if (!targetPosition) return;
+
+    // ✅ Correct aspect ratio
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    camera.position.copy(targetPosition.position);
+    camera.lookAt(targetPosition.lookAt);
+    controls.target.copy(targetPosition.lookAt);
 
     controls.object = camera;
     controls.update();
@@ -287,6 +287,13 @@ function animate() {
 function onWindowResize() {
     const aspect = window.innerWidth / window.innerHeight;
 
+    // ✅ Update the general main camera separately
+    if (cameras.main) {
+        cameras.main.aspect = aspect;
+        cameras.main.updateProjectionMatrix();
+    }
+
+    // ✅ Update all phone cameras dynamically
     Object.keys(cameras).forEach(phone => {
         Object.keys(cameras[phone]).forEach(view => {
             let cam = cameras[phone][view];
