@@ -6,7 +6,7 @@ import { GUI } from "../lib/lil-gui.module.min.js";
 
 let scene, camera, renderer, controls;
 let mainCamera, topCamera, zoomCamera;
-let loadedModels = {}; // Store models and their flip state
+let loadedModels, cameras = {}; // Store models and their flip state
 //const initialColor = { color: "#000000" };
 
 // Paths for models
@@ -60,23 +60,36 @@ function init() {
     document.body.appendChild(renderer.domElement);
 
     const aspect = window.innerWidth / window.innerHeight;
-    mainCamera = new THREE.PerspectiveCamera(45, aspect, 0.1, 100);
-    mainCamera.position.copy(cameraPositions.main.position);
-    mainCamera.lookAt(cameraPositions.main.lookAt);
 
-    zoomCamera = new THREE.PerspectiveCamera(50, aspect, 0.1, 100);
-    zoomCamera.position.copy(cameraPositions.zoom.position);
-    zoomCamera.lookAt(cameraPositions.zoom.lookAt);
+    // Initialize cameras dynamically for each phone
+    Object.keys(cameraPositions).forEach(phone => {
+        cameras[phone] = {}; // Create sub-object for the phone cameras
 
-    topCamera = new THREE.OrthographicCamera(-5 * aspect, 5 * aspect, 5, -5, 0.1, 100);
-    topCamera.position.copy(cameraPositions.top.position);
-    topCamera.lookAt(cameraPositions.top.lookAt);
+        Object.keys(cameraPositions[phone]).forEach(view => {
+            let cam;
+            if (view === "top") {
+                // Orthographic camera for top-down views
+                cam = new THREE.OrthographicCamera(-5 * aspect, 5 * aspect, 5, -5, 0.1, 100);
+            } else {
+                // Perspective camera for normal views
+                cam = new THREE.PerspectiveCamera(50, aspect, 0.1, 100);
+            }
 
-    camera = mainCamera;
+            cam.position.copy(cameraPositions[phone][view].position);
+            cam.lookAt(cameraPositions[phone][view].lookAt);
+            cameras[phone][view] = cam; // Store in cameras object
+        });
+    });
+
+    // Set default camera (iPhone main view)
+    camera = cameras.iPhone.main;
+    
+    // Initialize orbit controls with default camera
     controls = new OrbitControls(camera, renderer.domElement);
     controls.target.set(0, 1, 0);
     controls.update();
 
+    // Lights
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
 
