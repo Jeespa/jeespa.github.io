@@ -17,21 +17,26 @@ const models = [
 
 // Camera positions
 const cameraPositions = {
+    main: { // General view showing both phones
+        position: new THREE.Vector3(1, 2, 7), // Higher and further back
+        lookAt: new THREE.Vector3(0.75, 1, 0) // Between both phones
+    },
     iPhone: {
-        main: { position: new THREE.Vector3(0, 1, 6), lookAt: new THREE.Vector3(0, 1, 0) },
+        main: { position: new THREE.Vector3(-1, 1.5, 5), lookAt: new THREE.Vector3(0, 1, 0) },
         zoom: { position: new THREE.Vector3(0, 1, 3), lookAt: new THREE.Vector3(0, 1, 0) },
         top: { position: new THREE.Vector3(0, 5, 0), lookAt: new THREE.Vector3(0, 1, 0) },
         front: { position: new THREE.Vector3(0, 1, 4), lookAt: new THREE.Vector3(0, 1, 0) },
         back: { position: new THREE.Vector3(0, 1, -4), lookAt: new THREE.Vector3(0, 1, 0) }
     },
     samsung: {
-        main: { position: new THREE.Vector3(1.5, 1, 6), lookAt: new THREE.Vector3(1.5, 1, 0) },
+        main: { position: new THREE.Vector3(2, 1.5, 5), lookAt: new THREE.Vector3(1.5, 1, 0) },
         zoom: { position: new THREE.Vector3(1.5, 1, 3), lookAt: new THREE.Vector3(1.5, 1, 0) },
         top: { position: new THREE.Vector3(1.5, 5, 0), lookAt: new THREE.Vector3(1.5, 1, 0) },
         front: { position: new THREE.Vector3(1.5, 1, 4), lookAt: new THREE.Vector3(1.5, 1, 0) },
         back: { position: new THREE.Vector3(1.5, 1, -4), lookAt: new THREE.Vector3(1.5, 1, 0) }
     }
 };
+
 
 init();
 loadSkybox();
@@ -90,7 +95,7 @@ function init() {
 
     // Floor
     const floor = new THREE.Mesh(
-        new THREE.PlaneGeometry(60, 60),
+        new THREE.PlaneGeometry(50, 50),
         new THREE.MeshStandardMaterial({ color: 0xcccccc })
     );
     floor.rotation.x = -Math.PI / 2;
@@ -169,6 +174,11 @@ function toggleFlip(model) {
 function setupGUI() {
     const gui = new GUI();
 
+    // General Main Camera
+    const generalViewFolder = gui.addFolder("General Camera Views");
+    generalViewFolder.add({ main: () => switchCamera("main", "main") }, "main").name("Main View");
+    generalViewFolder.open();
+
     // iPhone Cameras
     const iphoneCameraFolder = gui.addFolder("iPhone 16 Pro Max - Camera Views");
     iphoneCameraFolder.add({ main: () => switchCamera("iPhone", "main") }, "main").name("Main View");
@@ -187,29 +197,34 @@ function setupGUI() {
     samsungCameraFolder.add({ back: () => switchCamera("samsung", "back") }, "back").name("Back View");
     samsungCameraFolder.open();
 
-    // Add buttons to flip models
+    // Flip Phones
     const flipFolder = gui.addFolder("Flip Phones");
-    Object.keys(loadedModels).forEach((key) => {
-        flipFolder.add({ flip: () => toggleFlip(loadedModels[key]) }, "flip").name(`Flip ${key}`);
+
+    models.forEach(({ name, displayName }) => {
+        flipFolder.add({ flip: () => toggleFlip(loadedModels[name]) }, "flip").name(`Flip ${displayName}`);
     });
+
     flipFolder.open();
 }
 
-
-
 function switchCamera(phone, view) {
-    const targetPosition = cameraPositions[phone][view];
+    let targetPosition;
+
+    if (phone === "main") {
+        targetPosition = cameraPositions.main; // Use the general main camera
+    } else {
+        targetPosition = cameraPositions[phone][view];
+    }
 
     if (!targetPosition) return;
 
     camera.position.copy(targetPosition.position);
     camera.lookAt(targetPosition.lookAt);
     controls.target.copy(targetPosition.lookAt);
-    
+
     controls.object = camera;
     controls.update();
 }
-
 
 function loadSkybox() {
     const textureLoader = new THREE.TextureLoader();
