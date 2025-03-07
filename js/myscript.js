@@ -4,41 +4,40 @@ import { OrbitControls } from "../lib/OrbitControls.module.js";
 import { TWEEN } from "../lib/tween.module.min.js";
 import { GUI } from "../lib/lil-gui.module.min.js";
 
-let scene, camera, renderer, controls, productModel;
+let scene, camera, renderer, controls;
 let mainCamera, topCamera, zoomCamera;
-const productPath = "../models/iPhone12/iphone_mini.glb";
-/* const productPath = "../models/iPhone16/iphone16.glb"; */
-/* const productPath = "../models/Samsung/samsung_s24_ultra.glb";  */
-const initialColor = { color: "#ff0000" }; // Global initial color of the product
+const initialColor = { color: "#ff0000" };
 
-// Camera positions & reset points
+// Paths for models
+const models = [
+    { path: "../models/iPhone12/iphone_mini.glb", position: new THREE.Vector3(-3, 1, 0), needsRotation: true },
+    { path: "../models/iPhone16/iphone16.glb", position: new THREE.Vector3(0, 1, 0), needsRotation: false },
+    { path: "../models/Samsung/samsung_s24_ultra.glb", position: new THREE.Vector3(3, 1, 0), needsRotation: false }
+];
+
+// Camera positions
 const cameraPositions = {
-    main: { position: new THREE.Vector3(1.5, 1, 2), lookAt: new THREE.Vector3(0, 1, 0) },
-    zoom: { position: new THREE.Vector3(1, 0.5, 1), lookAt: new THREE.Vector3(0, 1, 0) },
-    top: { position: new THREE.Vector3(0, 1.5, 0), lookAt: new THREE.Vector3(0, 0, 0) }
+    main: { position: new THREE.Vector3(1.5, 1, 6), lookAt: new THREE.Vector3(0, 1, 0) },
+    zoom: { position: new THREE.Vector3(1, 0.5, 3), lookAt: new THREE.Vector3(0, 1, 0) },
+    top: { position: new THREE.Vector3(0, 5, 0), lookAt: new THREE.Vector3(0, 0, 0) }
 };
 
 init();
 loadSkybox();
-loadProduct();
+loadProducts();
 setupGUI();
 animate();
 
 function init() {
-    // Scene Setup
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0xeeeeee);
 
-    // Renderer
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.shadowMap.enabled = true;
     document.body.appendChild(renderer.domElement);
 
-    // Aspect Ratio
     const aspect = window.innerWidth / window.innerHeight;
-
-    // Define Fixed Cameras Using Global Positions
     mainCamera = new THREE.PerspectiveCamera(45, aspect, 0.1, 100);
     mainCamera.position.copy(cameraPositions.main.position);
     mainCamera.lookAt(cameraPositions.main.lookAt);
@@ -51,15 +50,11 @@ function init() {
     topCamera.position.copy(cameraPositions.top.position);
     topCamera.lookAt(cameraPositions.top.lookAt);
 
-    // Default Camera
     camera = mainCamera;
-
-    // Controls
     controls = new OrbitControls(camera, renderer.domElement);
     controls.target.set(0, 1, 0);
     controls.update();
 
-    // Lights
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
 
@@ -80,81 +75,56 @@ function init() {
     window.addEventListener("resize", onWindowResize);
 }
 
-function loadProduct() {
+function loadProducts() {
     const loader = new GLTFLoader();
-    loader.load(productPath, (gltf) => {
-        productModel = gltf.scene;
+    models.forEach(({ path, position, needsRotation }) => {
+        loader.load(path, (gltf) => {
+            const model = gltf.scene;
+            model.position.copy(position);
+            model.scale.set(2, 2, 2);
 
-        // Adjust model scale
-        productModel.scale.set(2, 2, 2); // Increase size (adjust if needed)
-
-        // Rotate to make it stand upright
-        productModel.rotation.x = -Math.PI / 2; // Stand the phone up
-        productModel.rotation.y = Math.PI; // Rotate 180° on Y-axis to fix orientation
-
-        // Move slightly up so it doesn’t clip into the floor
-        productModel.position.y = 1;
-
-        // Convert initialColor to a Three.js Color
-        const appliedColor = new THREE.Color(initialColor.color);
-
-        // Enable shadows and apply the initial color
-        productModel.traverse((child) => {
-            if (child.isMesh) {
-                child.castShadow = true;
-                child.receiveShadow = true;
-
-                // Apply the color while keeping the material properties
-                if (child.material) {
-                    child.material.color.set(appliedColor);
-                    child.material.needsUpdate = true;
-                }
+            if (needsRotation) {
+                model.rotation.x = -Math.PI / 2;
+                model.rotation.y = Math.PI;
             }
-        });
 
-        scene.add(productModel);
+            model.traverse((child) => {
+                if (child.isMesh) {
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                    child.material.color.set(initialColor.color);
+                }
+            });
+
+            scene.add(model);
+        });
     });
 }
 
 function setupGUI() {
     const gui = new GUI();
     const cameraFolder = gui.addFolder("Camera Views");
-
     cameraFolder.add({ main: () => switchCamera(mainCamera) }, "main").name("Main View");
     cameraFolder.add({ top: () => switchCamera(topCamera) }, "top").name("Top View");
     cameraFolder.add({ zoom: () => switchCamera(zoomCamera) }, "zoom").name("Zoom View");
-
     cameraFolder.open();
-
-    const colorFolder = gui.addFolder("Product Customization");
-    colorFolder.addColor(initialColor, "color").onChange((value) => {
-        productModel.traverse((child) => {
-            if (child.isMesh) child.material.color.set(value);
-        });
-    });
-    colorFolder.open();
 }
 
 function switchCamera(newCamera) {
-    // Reset camera position and target dynamically
     if (newCamera === mainCamera) {
         mainCamera.position.copy(cameraPositions.main.position);
         mainCamera.lookAt(cameraPositions.main.lookAt);
-        controls.target.copy(cameraPositions.main.lookAt); // Reset controls
+        controls.target.copy(cameraPositions.main.lookAt);
     } else if (newCamera === zoomCamera) {
         zoomCamera.position.copy(cameraPositions.zoom.position);
         zoomCamera.lookAt(cameraPositions.zoom.lookAt);
-        controls.target.copy(cameraPositions.zoom.lookAt); // Reset controls
+        controls.target.copy(cameraPositions.zoom.lookAt);
     } else if (newCamera === topCamera) {
-        // Reset topCamera position & manually set its frustum
         topCamera.position.copy(cameraPositions.top.position);
         topCamera.lookAt(cameraPositions.top.lookAt);
-        controls.target.copy(cameraPositions.top.lookAt); // Reset controls
-
-        // Ensure topCamera is looking straight down
+        controls.target.copy(cameraPositions.top.lookAt);
         topCamera.up.set(0, 0, -1);
 
-        // Update aspect ratio & projection for topCamera
         const aspect = window.innerWidth / window.innerHeight;
         topCamera.left = -5 * aspect;
         topCamera.right = 5 * aspect;
@@ -163,12 +133,10 @@ function switchCamera(newCamera) {
         topCamera.updateProjectionMatrix();
     }
 
-    // Update active camera
     camera = newCamera;
     controls.object = camera;
     controls.update();
 }
-
 
 function loadSkybox() {
     const textureLoader = new THREE.TextureLoader();
@@ -196,9 +164,6 @@ function loadSkybox() {
     scene.add(skybox);
 }
 
-
-
-
 function animate() {
     requestAnimationFrame(animate);
     TWEEN.update();
@@ -211,13 +176,10 @@ function onWindowResize() {
     zoomCamera.aspect = aspect;
     mainCamera.updateProjectionMatrix();
     zoomCamera.updateProjectionMatrix();
-
-    // Update topCamera correctly when resizing
     topCamera.left = -5 * aspect;
     topCamera.right = 5 * aspect;
     topCamera.top = 5;
     topCamera.bottom = -5;
     topCamera.updateProjectionMatrix();
-
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
