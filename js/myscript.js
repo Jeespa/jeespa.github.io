@@ -63,13 +63,13 @@ function init() {
     scene.add(directionalLight);
 
     // Floor
-    /* const floor = new THREE.Mesh(
-        new THREE.PlaneGeometry(10, 10),
+    const floor = new THREE.Mesh(
+        new THREE.PlaneGeometry(100, 100),
         new THREE.MeshStandardMaterial({ color: 0xcccccc })
     );
     floor.rotation.x = -Math.PI / 2;
     floor.receiveShadow = true;
-    scene.add(floor); */
+    scene.add(floor);
 
     window.addEventListener("resize", onWindowResize);
 }
