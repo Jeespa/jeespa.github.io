@@ -85,6 +85,12 @@ function loadProducts() {
             model.scale.set(scale, scale, scale);
             model.userData.isFlipped = false;
 
+            let group = new THREE.Group(); // Create a new group as the pivot
+            group.add(model);
+
+            model.position.set(0, 0, 0); // Reset model position inside group
+            group.position.copy(position); // Position the group
+
             if (path.includes("Samsung")) {
                 model.rotation.x = Math.PI;
                 model.rotation.z = Math.PI;
@@ -109,8 +115,8 @@ function loadProducts() {
                 }
             });
 
-            scene.add(model);
-            loadedModels[path] = model; // Store the model
+            scene.add(group);
+            loadedModels[path] = group; // Store the model
 
             loadedCount++;
             if (loadedCount === models.length) {
