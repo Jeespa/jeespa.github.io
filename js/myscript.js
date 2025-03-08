@@ -192,19 +192,19 @@ function loadProducts() {
                     
                         child.material = new THREE.MeshBasicMaterial({
                             map: videoTexture,
-                            side: THREE.BackSide, 
+                            side: THREE.DoubleSide, // Ensure it's visible
                         });
                     
-                        // Flip texture vertically and ensure correct mapping
+                        // Reset settings
                         child.material.map.repeat.set(1, -1);
                         child.material.map.offset.set(0, 1);
                     
-                        // Force update
+                        // Force full refresh
                         child.material.map.needsUpdate = true;
                         child.material.needsUpdate = true;
                         videoTexture.needsUpdate = true;
                     
-                        console.log("iPhone Texture Updated");
+                        console.log("iPhone Material:", child.material);
                     }
                     
                     if (name === "Samsung" && child.name === "Object_9") {  
@@ -215,8 +215,8 @@ function loadProducts() {
                             side: THREE.FrontSide,  
                         });
                     
-                        // Reduce zoom effect and adjust mapping
-                        child.material.map.repeat.set(0.5, 1);  
+                        // Adjust scale and offset to fit screen properly
+                        child.material.map.repeat.set(0.5, 2);  
                         child.material.map.offset.set(0, 0);
                     
                         // Force update
@@ -224,8 +224,8 @@ function loadProducts() {
                         child.material.needsUpdate = true;
                         videoTexture.needsUpdate = true;
                     
-                        console.log("Samsung Texture Updated");
-                    }                                                                                                                                                                         
+                        console.log("Samsung Material:", child.material);
+                    }                                                                                                                                                                                       
                 }                    
             });
 
