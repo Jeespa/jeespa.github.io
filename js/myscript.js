@@ -195,10 +195,10 @@ function loadProducts() {
                             side: THREE.BackSide, 
                         });
                     
-                        // Keep correct flip and fix rotation
-                        child.material.map.repeat.set(1, 1);
-                        child.material.map.offset.set(0, 0);
-                        child.material.map.rotation = -Math.PI / 2; // Rotate video correctly
+                        // Reset values and ensure the video is visible
+                        child.material.map.repeat.set(1, -1);
+                        child.material.map.offset.set(0, 1);
+                        child.material.map.rotation = 0;  // Reset rotation
                     
                         child.material.map.needsUpdate = true;
                     }
@@ -211,15 +211,16 @@ function loadProducts() {
                             side: THREE.FrontSide,  
                         });
                     
-                        // Rotate video correctly
-                        child.material.map.rotation = Math.PI / 2; // Try -Math.PI / 2 if flipped wrong
-                    
-                        // Ensure proper scaling
-                        child.material.map.repeat.set(-1, 1);  
+                        // Reset values for visibility
+                        child.material.map.repeat.set(1, 1);
                         child.material.map.offset.set(0, 0);
+                        child.material.map.rotation = 0; // Reset rotation
                     
                         child.material.map.needsUpdate = true;
-                    }                                                                                                 
+                    
+                        // Debugging check
+                        console.log("Samsung Texture Applied:", child.material.map.image);
+                    }                                                                                                                    
                 }                    
             });
 
