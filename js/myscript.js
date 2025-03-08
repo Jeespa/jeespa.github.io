@@ -189,24 +189,41 @@ function loadProducts() {
                     
                     if (name === "iPhone" && child.name === "Cube014_screen001_0") {
                         console.log("Applying video to iPhone screen...");
+                        
                         child.material = new THREE.MeshBasicMaterial({
                             map: videoTexture,
-                            side: THREE.BackSide,  // Use BackSide to apply outside
+                            side: THREE.BackSide,  // Ensures correct rendering on iPhone
                         });
                     
-                        // Adjust scaling if needed
-                        child.material.map.repeat.set(1, 1);
-                        child.material.map.offset.set(0, 0);
-                    }                                     
-
+                        // Modify UVs for iPhone (Center & Scale)
+                        let uvAttribute = child.geometry.attributes.uv;
+                        for (let i = 0; i < uvAttribute.count; i++) {
+                            let u = uvAttribute.getX(i);
+                            let v = uvAttribute.getY(i);
+                            
+                            uvAttribute.setXY(i, u * 1.2 - 0.1, v * 1.2 - 0.1); // Adjust scale & centering
+                        }
+                        uvAttribute.needsUpdate = true;
+                    }
+                    
                     if (name === "Samsung" && child.name === "Object_9") {  
                         console.log("Applying video to Samsung screen...");
-                        child.material = new THREE.MeshBasicMaterial({ map: videoTexture });
+                        
+                        child.material = new THREE.MeshBasicMaterial({
+                            map: videoTexture,
+                            side: THREE.FrontSide,  // Normal side
+                        });
                     
-                        // 🔄 Flip the video correctly
-                        child.material.map.repeat.set(1, -1);  // Flips vertically
-                        child.material.map.offset.set(0, 1);   // Moves it back into place
-                    }                    
+                        // Flip & Adjust UVs for Samsung screen
+                        let uvAttribute = child.geometry.attributes.uv;
+                        for (let i = 0; i < uvAttribute.count; i++) {
+                            let u = uvAttribute.getX(i);
+                            let v = uvAttribute.getY(i);
+                            
+                            uvAttribute.setXY(i, 1 - u, v); // Flip horizontally
+                        }
+                        uvAttribute.needsUpdate = true;
+                    }
                 }
             });
 
