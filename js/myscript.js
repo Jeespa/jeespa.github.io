@@ -35,17 +35,6 @@ const cameraPositions = {
     }
 };
 
-const video = document.createElement("video");
-video.src = "../videos/test.mp4"; // Path to your video
-video.loop = true;
-video.muted = true;  // Mute to allow autoplay
-video.play();
-
-const videoTexture = new THREE.VideoTexture(video);
-videoTexture.minFilter = THREE.LinearFilter;
-videoTexture.magFilter = THREE.LinearFilter;
-videoTexture.format = THREE.RGBAFormat;
-
 init();
 loadSkybox();
 loadProducts();
@@ -141,7 +130,7 @@ function loadProducts() {
 
     // Create video element and texture
     const video = document.createElement("video");
-    video.src = "../videos/Pixar.mp4"; // Adjust path if needed
+    video.src = "../videos/test.mp4"; // Adjust path if needed
     video.loop = true;
     video.muted = true;  
     video.play();
