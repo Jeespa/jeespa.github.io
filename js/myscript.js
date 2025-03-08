@@ -184,8 +184,10 @@ function loadProducts() {
                             side: THREE.BackSide, 
                         });
                     
-                        child.material.map.repeat.set(0.5, 1);
-
+                        // Fix stretched texture
+                        child.material.map.repeat.set(1, 1);
+                        child.material.map.offset.set(0, 0);
+                    
                         // Force update
                         child.material.map.needsUpdate = true;
                     }
@@ -197,10 +199,6 @@ function loadProducts() {
                             map: videoTexture,
                             side: THREE.FrontSide,  
                         });
-                    
-                        child.material.map.rotation = Math.PI;
-                        // Force update
-                        child.material.map.needsUpdate = true;
                     }                                                                                                                                                                                                                          
                 }                    
             });
