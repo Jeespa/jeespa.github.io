@@ -192,12 +192,12 @@ function loadProducts() {
                     
                         child.material = new THREE.MeshBasicMaterial({
                             map: videoTexture,
-                            side: THREE.DoubleSide, // Ensure it's visible
+                            side: THREE.BackSide, // Ensure it's visible
                         });
                     
                         // Reset settings
-                        child.material.map.repeat.set(1, 1);
-                        child.material.map.offset.set(0, 0);
+                        child.material.map.repeat.set(1, -1);
+                        child.material.map.offset.set(0, 1);
                     
                         // Force full refresh
                         child.material.map.needsUpdate = true;
@@ -217,7 +217,7 @@ function loadProducts() {
                     
                         // Adjust scale and offset to fit screen properly
                         child.material.map.repeat.set(1, 1);  
-                        child.material.map.offset.set(1, 0.5);
+                        child.material.map.offset.set(0.5, 0);
                     
                         // Force update
                         child.material.map.needsUpdate = true;
