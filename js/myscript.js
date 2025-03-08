@@ -184,8 +184,9 @@ function loadProducts() {
                             side: THREE.BackSide, 
                         });
                     
-                        // Fix stretched texture by adjusting scaling
-                        child.material.map.repeat.set(0.5, 1);  // Adjust aspect ratio
+                        // Ensure correct aspect ratio
+                        child.material.map.repeat.set(1, 1);
+                        child.material.map.offset.set(0, 0);
                     
                         // Force update
                         child.material.map.needsUpdate = true;
@@ -199,12 +200,13 @@ function loadProducts() {
                             side: THREE.FrontSide,  
                         });
                     
-                        // Rotate the texture correctly
-                        child.material.map.rotation = Math.PI / 2;
+                        // Flip and align correctly
+                        child.material.map.repeat.set(1, -1);
+                        child.material.map.offset.set(0, 1);
                     
                         // Force update
                         child.material.map.needsUpdate = true;
-                    }                                                                                                                                                                                                       
+                    }                                                                                                                                                                                                                          
                 }                    
             });
 
