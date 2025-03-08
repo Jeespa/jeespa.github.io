@@ -192,12 +192,12 @@ function loadProducts() {
                     
                         child.material = new THREE.MeshBasicMaterial({
                             map: videoTexture,
-                            side: THREE.BackSide, // Keep it FrontSide to avoid inside-out effect
+                            side: THREE.FrontSide, // Make sure the screen isn't inverted
                         });
                     
-                        // Flip vertically (fixes upside-down issue)
-                        child.material.map.repeat.set(0, 1);
-                        child.material.map.offset.set(0, 0);
+                        // Flip video texture vertically
+                        child.material.map.repeat.set(1, -1);  
+                        child.material.map.offset.set(0, 1);  
                         child.material.map.needsUpdate = true;
                     }
                     
@@ -209,12 +209,11 @@ function loadProducts() {
                             side: THREE.FrontSide,  
                         });
                     
-                        // Rotate 90 degrees (flipping bottom from left to actual bottom)
-                        child.material.map.repeat.set(-0.5, 1);  // Swap width and height
-                        child.material.map.offset.set(1, 0);   // Adjust position
+                        // Flip video texture properly
+                        child.material.map.repeat.set(1, -1);  
+                        child.material.map.offset.set(0, 1);  
                         child.material.map.needsUpdate = true;
-                    }
-                                                            
+                    }                                           
                 }                    
             });
 
