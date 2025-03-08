@@ -189,35 +189,35 @@ function loadProducts() {
                     
                     if (name === "iPhone" && child.name === "Cube014_screen001_0") {
                         console.log("Applying video to iPhone screen...");
-                        
+                    
                         child.material = new THREE.MeshBasicMaterial({
                             map: videoTexture,
                             side: THREE.FrontSide, // Ensure correct side is used
                         });
                     
-                        // Adjust Texture Mapping for iPhone
-                        child.material.map.center.set(0.5, 0.5);  // Set pivot point to center
-                        child.material.map.rotation = Math.PI;    // Rotate 180 degrees
-                        child.material.map.repeat.set(1, 1);      // Ensure correct scale
-                        child.material.map.offset.set(0, 0);      // Reset offset
+                        // Flip and reposition iPhone texture
+                        child.material.map.wrapS = THREE.RepeatWrapping;
+                        child.material.map.wrapT = THREE.RepeatWrapping;
+                        child.material.map.repeat.set(-1, 1);  // Flip horizontally
+                        child.material.map.offset.set(1, 0);   // Adjust position
                         child.material.map.needsUpdate = true;
                     }
                     
                     if (name === "Samsung" && child.name === "Object_9") {  
                         console.log("Applying video to Samsung screen...");
-                        
+                    
                         child.material = new THREE.MeshBasicMaterial({
                             map: videoTexture,
                             side: THREE.FrontSide,  // Normal side
                         });
                     
-                        // Adjust Texture Mapping for Samsung
-                        child.material.map.center.set(0.5, 0.5);  // Set pivot to center
-                        child.material.map.rotation = -Math.PI / 2;  // Rotate 90 degrees counterclockwise
-                        child.material.map.repeat.set(1, 1);  // Keep scaling normal
-                        child.material.map.offset.set(0, 0);  // Reset offset
+                        // Flip and reposition Samsung texture
+                        child.material.map.wrapS = THREE.RepeatWrapping;
+                        child.material.map.wrapT = THREE.RepeatWrapping;
+                        child.material.map.repeat.set(1, -1);  // Flip vertically
+                        child.material.map.offset.set(0, 1);   // Adjust position
                         child.material.map.needsUpdate = true;
-                    }
+                    }                    
                 }                    
             });
 
