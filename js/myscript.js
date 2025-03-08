@@ -36,7 +36,7 @@ const cameraPositions = {
 };
 
 const video = document.createElement("video");
-video.src = "../videos/Pixar.mp4"; // Path to your video
+video.src = "../videos/test.mp4"; // Path to your video
 video.loop = true;
 video.muted = true;  // Mute to allow autoplay
 video.play();
@@ -194,17 +194,6 @@ function loadProducts() {
                             map: videoTexture,
                             side: THREE.BackSide, // Ensure it's visible
                         });
-                    
-                        // Reset settings
-                        child.material.map.repeat.set(1, -1);
-                        child.material.map.offset.set(0, 1);
-                    
-                        // Force full refresh
-                        child.material.map.needsUpdate = true;
-                        child.material.needsUpdate = true;
-                        videoTexture.needsUpdate = true;
-                    
-                        console.log("iPhone Material:", child.material);
                     }
                     
                     if (name === "Samsung" && child.name === "Object_9") {  
@@ -214,17 +203,6 @@ function loadProducts() {
                             map: videoTexture,
                             side: THREE.FrontSide,  
                         });
-                    
-                        // Adjust scale and offset to fit screen properly
-                        child.material.map.repeat.set(1, 1);  
-                        child.material.map.offset.set(0.5, 0);
-                    
-                        // Force update
-                        child.material.map.needsUpdate = true;
-                        child.material.needsUpdate = true;
-                        videoTexture.needsUpdate = true;
-                    
-                        console.log("Samsung Material:", child.material);
                     }                                                                                                                                                                                       
                 }                    
             });
