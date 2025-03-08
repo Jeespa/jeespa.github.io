@@ -184,11 +184,22 @@ function loadProducts() {
                             side: THREE.BackSide, 
                         });
                     
-                        // Fix stretched texture
-                        child.material.map.repeat.set(1, 1);
-                        child.material.map.offset.set(0, 0);
+                        // Ensure proper texture wrapping to avoid stretching
+                        videoTexture.wrapS = THREE.ClampToEdgeWrapping;
+                        videoTexture.wrapT = THREE.ClampToEdgeWrapping;
+                        videoTexture.minFilter = THREE.LinearFilter;
+                        videoTexture.magFilter = THREE.LinearFilter;
+                        videoTexture.generateMipmaps = false;
                     
-                        // Force update
+                        // Auto-scale to fit screen
+                        const aspectRatio = videoTexture.image.videoWidth / videoTexture.image.videoHeight;
+                        if (aspectRatio > 1) {
+                            child.material.map.repeat.set(1, 1 / aspectRatio);
+                        } else {
+                            child.material.map.repeat.set(aspectRatio, 1);
+                        }
+                        
+                        child.material.map.offset.set(0, 0);
                         child.material.map.needsUpdate = true;
                     }
                     
@@ -199,7 +210,25 @@ function loadProducts() {
                             map: videoTexture,
                             side: THREE.FrontSide,  
                         });
-                    }                                                                                                                                                                                                                          
+                    
+                        // Ensure proper texture wrapping to avoid stretching
+                        videoTexture.wrapS = THREE.ClampToEdgeWrapping;
+                        videoTexture.wrapT = THREE.ClampToEdgeWrapping;
+                        videoTexture.minFilter = THREE.LinearFilter;
+                        videoTexture.magFilter = THREE.LinearFilter;
+                        videoTexture.generateMipmaps = false;
+                    
+                        // Auto-scale to fit screen
+                        const aspectRatio = videoTexture.image.videoWidth / videoTexture.image.videoHeight;
+                        if (aspectRatio > 1) {
+                            child.material.map.repeat.set(1, 1 / aspectRatio);
+                        } else {
+                            child.material.map.repeat.set(aspectRatio, 1);
+                        }
+                    
+                        child.material.map.offset.set(0, 0);
+                        child.material.map.needsUpdate = true;
+                    }                                                                                                                                                                                                                                              
                 }                    
             });
 
