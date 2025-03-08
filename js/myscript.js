@@ -195,9 +195,11 @@ function loadProducts() {
                             side: THREE.BackSide, 
                         });
                     
-                        // Fix upside-down issue by inverting Y
+                        // Keep correct flip and fix rotation
                         child.material.map.repeat.set(1, 1);
                         child.material.map.offset.set(0, 0);
+                        child.material.map.rotation = -Math.PI / 2; // Rotate video correctly
+                    
                         child.material.map.needsUpdate = true;
                     }
                     
@@ -209,15 +211,15 @@ function loadProducts() {
                             side: THREE.FrontSide,  
                         });
                     
-                        // Ensure correct rotation
-                        child.material.map.rotation = Math.PI / 2; 
+                        // Rotate video correctly
+                        child.material.map.rotation = Math.PI / 2; // Try -Math.PI / 2 if flipped wrong
                     
-                        // Ensure video is visible
-                        child.material.map.repeat.set(1, 1);  
+                        // Ensure proper scaling
+                        child.material.map.repeat.set(-1, 1);  
                         child.material.map.offset.set(0, 0);
                     
                         child.material.map.needsUpdate = true;
-                    }                                                                               
+                    }                                                                                                 
                 }                    
             });
 
