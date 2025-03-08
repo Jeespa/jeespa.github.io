@@ -184,10 +184,8 @@ function loadProducts() {
                             side: THREE.BackSide, 
                         });
                     
-                        // Ensure correct aspect ratio
-                        child.material.map.repeat.set(1, 1);
-                        child.material.map.offset.set(0, 0);
-                    
+                        child.material.map.repeat.set(0.5, 1);
+
                         // Force update
                         child.material.map.needsUpdate = true;
                     }
@@ -200,10 +198,7 @@ function loadProducts() {
                             side: THREE.FrontSide,  
                         });
                     
-                        // Flip and align correctly
-                        child.material.map.repeat.set(1, -1);
-                        child.material.map.offset.set(0, 1);
-                    
+                        child.material.map.rotation = Math.PI;
                         // Force update
                         child.material.map.needsUpdate = true;
                     }                                                                                                                                                                                                                          
