@@ -192,14 +192,12 @@ function loadProducts() {
                     
                         child.material = new THREE.MeshBasicMaterial({
                             map: videoTexture,
-                            side: THREE.BackSide, // Fix inside-out issue
+                            side: THREE.BackSide, // Keep it FrontSide to avoid inside-out effect
                         });
                     
-                        // Ensure texture fits properly
-                        child.material.map.wrapS = THREE.RepeatWrapping;
-                        child.material.map.wrapT = THREE.RepeatWrapping;
-                        child.material.map.repeat.set(-1, -1);  // Flip both horizontally and vertically
-                        child.material.map.offset.set(1, 1);   // Center the video
+                        // Flip vertically (fixes upside-down issue)
+                        child.material.map.repeat.set(1, -1);
+                        child.material.map.offset.set(0, 1);
                         child.material.map.needsUpdate = true;
                     }
                     
@@ -208,16 +206,15 @@ function loadProducts() {
                     
                         child.material = new THREE.MeshBasicMaterial({
                             map: videoTexture,
-                            side: THREE.FrontSide,  // Ensure video appears on the right side
+                            side: THREE.FrontSide,  
                         });
                     
-                        // Flip Samsung texture correctly
-                        child.material.map.wrapS = THREE.RepeatWrapping;
-                        child.material.map.wrapT = THREE.RepeatWrapping;
-                        child.material.map.repeat.set(-1, 1);  // Flip horizontally
-                        child.material.map.offset.set(1, 0);   // Adjust position
+                        // Rotate 90 degrees (flipping bottom from left to actual bottom)
+                        child.material.map.repeat.set(0, -1);  // Swap width and height
+                        child.material.map.offset.set(1, 1);   // Adjust position
                         child.material.map.needsUpdate = true;
-                    }                                        
+                    }
+                                                            
                 }                    
             });
 
