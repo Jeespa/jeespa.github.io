@@ -181,12 +181,11 @@ function loadProducts() {
                     
                         child.material = new THREE.MeshBasicMaterial({
                             map: videoTexture,
-                            side: THREE.BackSide, // Ensure it's visible
+                            side: THREE.BackSide, 
                         });
                     
-                        // Fix stretched texture
-                        child.material.map.repeat.set(1, 1);
-                        child.material.map.offset.set(0, 0);
+                        // Fix stretched texture by adjusting scaling
+                        child.material.map.repeat.set(0.5, 1);  // Adjust aspect ratio
                     
                         // Force update
                         child.material.map.needsUpdate = true;
@@ -200,13 +199,12 @@ function loadProducts() {
                             side: THREE.FrontSide,  
                         });
                     
-                        // Flip video to correct orientation
-                        child.material.map.repeat.set(1, -1);
-                        child.material.map.offset.set(0, 1);
+                        // Rotate the texture correctly
+                        child.material.map.rotation = Math.PI / 2;
                     
                         // Force update
                         child.material.map.needsUpdate = true;
-                    }                                                                                                                                                                                    
+                    }                                                                                                                                                                                                       
                 }                    
             });
 
