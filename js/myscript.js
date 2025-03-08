@@ -193,7 +193,7 @@ function loadProducts() {
                     
                         child.material = new THREE.MeshBasicMaterial({
                             map: videoTexture,
-                            side: THREE.FrontSide,  // Ensures correct rendering
+                            side: THREE.BackSide,  // Ensures correct rendering
                         });
                     
                         // 🔄 Flip the texture to display correctly
