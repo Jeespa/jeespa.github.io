@@ -197,8 +197,8 @@ function loadProducts() {
                         }); */
                     
                         // 🔄 Flip the texture to display correctly
-                        //child.geometry.scale(-1, -1, 1); // Mirror along X-axis
-                        child.material.map.repeat.set(-1, 1); // Flips it horizontally
+                        child.geometry.scale(-1, -1, 1); // Mirror along X-axis
+                        //child.material.map.repeat.set(-1, 1); // Flips it horizontally
                         child.material.map.offset.set(1, 0);  // Adjusts position
                     }                    
 
