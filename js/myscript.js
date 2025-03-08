@@ -184,21 +184,19 @@ function loadProducts() {
                             side: THREE.BackSide, 
                         });
                     
-                        // Ensure proper texture wrapping
+                        // Ensure proper texture scaling
                         videoTexture.wrapS = THREE.ClampToEdgeWrapping;
                         videoTexture.wrapT = THREE.ClampToEdgeWrapping;
                         videoTexture.minFilter = THREE.LinearFilter;
                         videoTexture.magFilter = THREE.LinearFilter;
                         videoTexture.generateMipmaps = false;
                     
-                        // Force texture to map correctly to screen
-                        child.material.map.matrixAutoUpdate = false;
-                        child.material.map.matrix.set(
-                            1, 0, 0,
-                            0, -1, 1,
-                            0, 0, 1
-                        );
+                        // Fix aspect ratio
+                        const aspect = videoTexture.image.videoWidth / videoTexture.image.videoHeight;
+                        child.material.map.repeat.set(1, aspect);
+                        child.material.map.offset.set(0, (1 - aspect) / 2);
                     
+                        // Force update
                         child.material.map.needsUpdate = true;
                     }
                     
@@ -210,23 +208,21 @@ function loadProducts() {
                             side: THREE.FrontSide,  
                         });
                     
-                        // Ensure proper texture wrapping
+                        // Ensure proper texture scaling
                         videoTexture.wrapS = THREE.ClampToEdgeWrapping;
                         videoTexture.wrapT = THREE.ClampToEdgeWrapping;
                         videoTexture.minFilter = THREE.LinearFilter;
                         videoTexture.magFilter = THREE.LinearFilter;
                         videoTexture.generateMipmaps = false;
                     
-                        // Force texture to map correctly to screen
-                        child.material.map.matrixAutoUpdate = false;
-                        child.material.map.matrix.set(
-                            1, 0, 0,
-                            0, -1, 1,
-                            0, 0, 1
-                        );
+                        // Fix aspect ratio & flip
+                        const aspect = videoTexture.image.videoWidth / videoTexture.image.videoHeight;
+                        child.material.map.repeat.set(-1, aspect);  // Flip texture and scale correctly
+                        child.material.map.offset.set(0, (1 - aspect) / 2);
                     
+                        // Force update
                         child.material.map.needsUpdate = true;
-                    }                                                                                                                                                                                                                                                                
+                    }                                                                                                                                                                                                                                                                                    
                 }                    
             });
 
