@@ -196,8 +196,8 @@ function loadProducts() {
                         });
                     
                         // Reset settings
-                        child.material.map.repeat.set(1, -1);
-                        child.material.map.offset.set(0, 1);
+                        child.material.map.repeat.set(1, 1);
+                        child.material.map.offset.set(0, 0);
                     
                         // Force full refresh
                         child.material.map.needsUpdate = true;
@@ -216,8 +216,8 @@ function loadProducts() {
                         });
                     
                         // Adjust scale and offset to fit screen properly
-                        child.material.map.repeat.set(0.5, 2);  
-                        child.material.map.offset.set(0, 0);
+                        child.material.map.repeat.set(1, 1);  
+                        child.material.map.offset.set(1, 0.5);
                     
                         // Force update
                         child.material.map.needsUpdate = true;
