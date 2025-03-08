@@ -197,10 +197,14 @@ function loadProducts() {
                     
                         // Reset values and ensure the video is visible
                         child.material.map.repeat.set(1, -1);
-                        child.material.map.offset.set(0, 1);
+                        child.material.map.offset.set(0, 0);
                         child.material.map.rotation = 0;  // Reset rotation
                     
+                        videoTexture.needsUpdate = true;
                         child.material.map.needsUpdate = true;
+                    
+                        // Debugging check
+                        console.log("iPhone Texture Applied:", child.material.map.image);
                     }
                     
                     if (name === "Samsung" && child.name === "Object_9") {  
@@ -211,16 +215,17 @@ function loadProducts() {
                             side: THREE.FrontSide,  
                         });
                     
-                        // Reset values for visibility
-                        child.material.map.repeat.set(1, 1);
+                        // Ensure the correct scale
+                        child.material.map.repeat.set(1, 1);  
                         child.material.map.offset.set(0, 0);
                         child.material.map.rotation = 0; // Reset rotation
                     
+                        videoTexture.needsUpdate = true;
                         child.material.map.needsUpdate = true;
                     
                         // Debugging check
                         console.log("Samsung Texture Applied:", child.material.map.image);
-                    }                                                                                                                    
+                    }                                                                                                                                       
                 }                    
             });
 
