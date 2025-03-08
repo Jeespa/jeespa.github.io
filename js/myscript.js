@@ -192,12 +192,12 @@ function loadProducts() {
                     
                         child.material = new THREE.MeshBasicMaterial({
                             map: videoTexture,
-                            side: THREE.FrontSide, // Make sure the screen isn't inverted
+                            side: THREE.BackSide, // Needed for correct orientation on iPhone
                         });
                     
-                        // Flip video texture vertically
-                        child.material.map.repeat.set(1, -1);  
-                        child.material.map.offset.set(0, 1);  
+                        // Flip video vertically
+                        child.material.map.repeat.set(1, -1);
+                        child.material.map.offset.set(0, 1);
                         child.material.map.needsUpdate = true;
                     }
                     
@@ -209,11 +209,15 @@ function loadProducts() {
                             side: THREE.FrontSide,  
                         });
                     
-                        // Flip video texture properly
-                        child.material.map.repeat.set(1, -1);  
-                        child.material.map.offset.set(0, 1);  
+                        // Rotate video 90 degrees by swapping repeat values
+                        child.material.map.repeat.set(1, 1);  // Keep normal scale
+                        child.material.map.offset.set(0, 0);  
+                    
+                        // Try rotating manually if still incorrect
+                        child.material.map.rotation = Math.PI / 2; // 90-degree rotation
+                    
                         child.material.map.needsUpdate = true;
-                    }                                           
+                    }                                                              
                 }                    
             });
 
