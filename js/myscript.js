@@ -183,6 +183,13 @@ function loadProducts() {
                             map: videoTexture,
                             side: THREE.BackSide, // Ensure it's visible
                         });
+                    
+                        // Fix stretched texture
+                        child.material.map.repeat.set(1, 1);
+                        child.material.map.offset.set(0, 0);
+                    
+                        // Force update
+                        child.material.map.needsUpdate = true;
                     }
                     
                     if (name === "Samsung" && child.name === "Object_9") {  
@@ -192,7 +199,14 @@ function loadProducts() {
                             map: videoTexture,
                             side: THREE.FrontSide,  
                         });
-                    }                                                                                                                                                                                       
+                    
+                        // Flip video to correct orientation
+                        child.material.map.repeat.set(1, -1);
+                        child.material.map.offset.set(0, 1);
+                    
+                        // Force update
+                        child.material.map.needsUpdate = true;
+                    }                                                                                                                                                                                    
                 }                    
             });
 
