@@ -192,19 +192,19 @@ function loadProducts() {
                     
                         child.material = new THREE.MeshBasicMaterial({
                             map: videoTexture,
-                            side: THREE.BackSide, 
+                            side: THREE.DoubleSide, // Change to DoubleSide for debugging
                         });
                     
-                        // Reset values and ensure the video is visible
-                        child.material.map.repeat.set(1, -1);
+                        // Ensure video mapping is correct
+                        child.material.map.repeat.set(1, 1);
                         child.material.map.offset.set(0, 0);
-                        child.material.map.rotation = 0;  // Reset rotation
+                        child.material.map.rotation = 0;
                     
-                        videoTexture.needsUpdate = true;
+                        // Force update
                         child.material.map.needsUpdate = true;
+                        child.material.needsUpdate = true;
                     
-                        // Debugging check
-                        console.log("iPhone Texture Applied:", child.material.map.image);
+                        console.log("iPhone Texture Updated");
                     }
                     
                     if (name === "Samsung" && child.name === "Object_9") {  
@@ -212,20 +212,20 @@ function loadProducts() {
                     
                         child.material = new THREE.MeshBasicMaterial({
                             map: videoTexture,
-                            side: THREE.FrontSide,  
+                            side: THREE.DoubleSide, // Change to DoubleSide for debugging
                         });
                     
-                        // Ensure the correct scale
-                        child.material.map.repeat.set(1, 1);  
+                        // Ensure video mapping is correct
+                        child.material.map.repeat.set(1, 1);
                         child.material.map.offset.set(0, 0);
-                        child.material.map.rotation = 0; // Reset rotation
+                        child.material.map.rotation = 0;
                     
-                        videoTexture.needsUpdate = true;
+                        // Force update
                         child.material.map.needsUpdate = true;
+                        child.material.needsUpdate = true;
                     
-                        // Debugging check
-                        console.log("Samsung Texture Applied:", child.material.map.image);
-                    }                                                                                                                                       
+                        console.log("Samsung Texture Updated");
+                    }                                                                                                                                                       
                 }                    
             });
 
