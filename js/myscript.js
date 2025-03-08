@@ -192,18 +192,15 @@ function loadProducts() {
                         
                         child.material = new THREE.MeshBasicMaterial({
                             map: videoTexture,
-                            side: THREE.BackSide,  // Ensures correct rendering on iPhone
+                            side: THREE.FrontSide, // Ensure correct side is used
                         });
                     
-                        // Modify UVs for iPhone (Center & Scale)
-                        let uvAttribute = child.geometry.attributes.uv;
-                        for (let i = 0; i < uvAttribute.count; i++) {
-                            let u = uvAttribute.getX(i);
-                            let v = uvAttribute.getY(i);
-                            
-                            uvAttribute.setXY(i, u * 1.2 - 0.1, v * 1.2 - 0.1); // Adjust scale & centering
-                        }
-                        uvAttribute.needsUpdate = true;
+                        // Adjust Texture Mapping for iPhone
+                        child.material.map.center.set(0.5, 0.5);  // Set pivot point to center
+                        child.material.map.rotation = Math.PI;    // Rotate 180 degrees
+                        child.material.map.repeat.set(1, 1);      // Ensure correct scale
+                        child.material.map.offset.set(0, 0);      // Reset offset
+                        child.material.map.needsUpdate = true;
                     }
                     
                     if (name === "Samsung" && child.name === "Object_9") {  
@@ -214,17 +211,14 @@ function loadProducts() {
                             side: THREE.FrontSide,  // Normal side
                         });
                     
-                        // Flip & Adjust UVs for Samsung screen
-                        let uvAttribute = child.geometry.attributes.uv;
-                        for (let i = 0; i < uvAttribute.count; i++) {
-                            let u = uvAttribute.getX(i);
-                            let v = uvAttribute.getY(i);
-                            
-                            uvAttribute.setXY(i, 1 - u, v); // Flip horizontally
-                        }
-                        uvAttribute.needsUpdate = true;
+                        // Adjust Texture Mapping for Samsung
+                        child.material.map.center.set(0.5, 0.5);  // Set pivot to center
+                        child.material.map.rotation = -Math.PI / 2;  // Rotate 90 degrees counterclockwise
+                        child.material.map.repeat.set(1, 1);  // Keep scaling normal
+                        child.material.map.offset.set(0, 0);  // Reset offset
+                        child.material.map.needsUpdate = true;
                     }
-                }
+                }                    
             });
 
             scene.add(group);
