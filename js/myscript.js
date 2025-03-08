@@ -184,17 +184,21 @@ function loadProducts() {
                             side: THREE.BackSide, 
                         });
                     
-                        // Ensure proper texture scaling
+                        // Ensure texture wraps properly to avoid stretching
                         videoTexture.wrapS = THREE.ClampToEdgeWrapping;
                         videoTexture.wrapT = THREE.ClampToEdgeWrapping;
                         videoTexture.minFilter = THREE.LinearFilter;
                         videoTexture.magFilter = THREE.LinearFilter;
                         videoTexture.generateMipmaps = false;
                     
-                        // Fix aspect ratio
-                        const aspect = videoTexture.image.videoWidth / videoTexture.image.videoHeight;
-                        child.material.map.repeat.set(1, aspect);
-                        child.material.map.offset.set(0, (1 - aspect) / 2);
+                        // Fix aspect ratio scaling issue
+                        const videoAspect = videoTexture.image.videoWidth / videoTexture.image.videoHeight;
+                        const screenAspect = 9 / 19.5; // Approximate phone screen aspect ratio
+                        const scaleFactor = videoAspect / screenAspect;
+                    
+                        // Ensure the texture properly maps without stretching
+                        child.material.map.repeat.set(1, scaleFactor);
+                        child.material.map.offset.set(0, (1 - scaleFactor) / 2);
                     
                         // Force update
                         child.material.map.needsUpdate = true;
@@ -208,21 +212,25 @@ function loadProducts() {
                             side: THREE.FrontSide,  
                         });
                     
-                        // Ensure proper texture scaling
+                        // Ensure texture wraps properly to avoid cropping
                         videoTexture.wrapS = THREE.ClampToEdgeWrapping;
                         videoTexture.wrapT = THREE.ClampToEdgeWrapping;
                         videoTexture.minFilter = THREE.LinearFilter;
                         videoTexture.magFilter = THREE.LinearFilter;
                         videoTexture.generateMipmaps = false;
                     
-                        // Fix aspect ratio & flip
-                        const aspect = videoTexture.image.videoWidth / videoTexture.image.videoHeight;
-                        child.material.map.repeat.set(-1, aspect);  // Flip texture and scale correctly
-                        child.material.map.offset.set(0, (1 - aspect) / 2);
+                        // Fix aspect ratio scaling issue
+                        const videoAspect = videoTexture.image.videoWidth / videoTexture.image.videoHeight;
+                        const screenAspect = 9 / 19.5; // Approximate phone screen aspect ratio
+                        const scaleFactor = videoAspect / screenAspect;
+                    
+                        // Flip and scale correctly
+                        child.material.map.repeat.set(1, -scaleFactor);
+                        child.material.map.offset.set(0, 1 - scaleFactor);
                     
                         // Force update
                         child.material.map.needsUpdate = true;
-                    }                                                                                                                                                                                                                                                                                    
+                    }                                                                                                                                                                                                                                                                                                       
                 }                    
             });
 
