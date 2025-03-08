@@ -192,14 +192,14 @@ function loadProducts() {
                     
                         child.material = new THREE.MeshBasicMaterial({
                             map: videoTexture,
-                            side: THREE.FrontSide, // Ensure correct side is used
+                            side: THREE.BackSide, // Fix inside-out issue
                         });
                     
-                        // Flip and reposition iPhone texture
+                        // Ensure texture fits properly
                         child.material.map.wrapS = THREE.RepeatWrapping;
                         child.material.map.wrapT = THREE.RepeatWrapping;
-                        child.material.map.repeat.set(-1, 1);  // Flip horizontally
-                        child.material.map.offset.set(1, 0);   // Adjust position
+                        child.material.map.repeat.set(-1, -1);  // Flip both horizontally and vertically
+                        child.material.map.offset.set(1, 1);   // Center the video
                         child.material.map.needsUpdate = true;
                     }
                     
@@ -208,16 +208,16 @@ function loadProducts() {
                     
                         child.material = new THREE.MeshBasicMaterial({
                             map: videoTexture,
-                            side: THREE.FrontSide,  // Normal side
+                            side: THREE.FrontSide,  // Ensure video appears on the right side
                         });
                     
-                        // Flip and reposition Samsung texture
+                        // Flip Samsung texture correctly
                         child.material.map.wrapS = THREE.RepeatWrapping;
                         child.material.map.wrapT = THREE.RepeatWrapping;
-                        child.material.map.repeat.set(1, -1);  // Flip vertically
-                        child.material.map.offset.set(0, 1);   // Adjust position
+                        child.material.map.repeat.set(-1, 1);  // Flip horizontally
+                        child.material.map.offset.set(1, 0);   // Adjust position
                         child.material.map.needsUpdate = true;
-                    }                    
+                    }                                        
                 }                    
             });
 
