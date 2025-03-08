@@ -197,8 +197,8 @@ function loadProducts() {
                         });
 
                         // 🔍 Scale the video down to fit properly
-                        child.material.map.repeat.set(0.5, 0.5); // Shrink video texture
-                        child.material.map.offset.set(0.25, 0.25); // Center the video
+                        child.material.map.repeat.set(1, 1); // Shrink video texture
+                        child.material.map.offset.set(0, 0); // Center the video
                     }                                       
 
                     if (name === "Samsung" && (child.name === "Object_9")) {  
@@ -206,8 +206,8 @@ function loadProducts() {
                         child.material = new THREE.MeshBasicMaterial({ map: videoTexture });
 
                         // 🔄 Rotate the texture 90° by flipping UVs
-                        child.material.map.repeat.set(1, -1);  // Flips vertically
-                        child.material.map.offset.set(0, 1);   // Adjust position
+                        child.material.map.repeat.set(-1, 1);  // Flips vertically
+                        child.material.map.offset.set(1, 0);   // Adjust position
                     }
                 }
             });
