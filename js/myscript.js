@@ -192,17 +192,17 @@ function loadProducts() {
                     
                         child.material = new THREE.MeshBasicMaterial({
                             map: videoTexture,
-                            side: THREE.DoubleSide, // Change to DoubleSide for debugging
+                            side: THREE.BackSide, 
                         });
                     
-                        // Ensure video mapping is correct
-                        child.material.map.repeat.set(1, 1);
-                        child.material.map.offset.set(0, 0);
-                        child.material.map.rotation = 0;
+                        // Flip texture vertically and ensure correct mapping
+                        child.material.map.repeat.set(1, -1);
+                        child.material.map.offset.set(0, 1);
                     
                         // Force update
                         child.material.map.needsUpdate = true;
                         child.material.needsUpdate = true;
+                        videoTexture.needsUpdate = true;
                     
                         console.log("iPhone Texture Updated");
                     }
@@ -212,20 +212,20 @@ function loadProducts() {
                     
                         child.material = new THREE.MeshBasicMaterial({
                             map: videoTexture,
-                            side: THREE.DoubleSide, // Change to DoubleSide for debugging
+                            side: THREE.FrontSide,  
                         });
                     
-                        // Ensure video mapping is correct
-                        child.material.map.repeat.set(1, 1);
+                        // Reduce zoom effect and adjust mapping
+                        child.material.map.repeat.set(0.5, 1);  
                         child.material.map.offset.set(0, 0);
-                        child.material.map.rotation = 0;
                     
                         // Force update
                         child.material.map.needsUpdate = true;
                         child.material.needsUpdate = true;
+                        videoTexture.needsUpdate = true;
                     
                         console.log("Samsung Texture Updated");
-                    }                                                                                                                                                       
+                    }                                                                                                                                                                         
                 }                    
             });
 
