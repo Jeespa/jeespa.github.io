@@ -197,9 +197,9 @@ function loadProducts() {
                         }); */
                     
                         // 🔄 Flip the texture to display correctly
-                        child.geometry.scale(-1, -1, 1); // Mirror along X-axis
+                        //child.geometry.scale(-1, -1, 1); // Mirror along X-axis
                         //child.material.map.repeat.set(-1, 1); // Flips it horizontally
-                        //child.material.map.offset.set(1, 0);  // Adjusts position
+                        child.material.map.offset.set(1, 0);  // Adjusts position
                     }                    
 
                     if (name === "Samsung" && (child.name === "Object_9")) {  
